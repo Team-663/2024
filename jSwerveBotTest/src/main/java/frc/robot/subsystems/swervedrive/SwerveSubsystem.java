@@ -186,8 +186,8 @@ public class SwerveSubsystem extends SubsystemBase {
     * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
     */
    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle) {
-      xInput = Math.pow(xInput, 3);
-      yInput = Math.pow(yInput, 3);
+      xInput = Math.pow(xInput, 2);
+      yInput = Math.pow(yInput, 2);
       return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(),
             getHeading().getRadians());
    }
