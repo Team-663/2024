@@ -53,7 +53,7 @@ public class RobotContainer {
       configureBindings();
       // 185.0 front left
       // angle gear ratio default 12.8
-      //https://www.chiefdelphi.com/t/yet-another-generic-swerve-library-yagsl-beta/425148/402
+      //
       AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
             // Applies deadbands and inverts controls because joysticks
             // are back-right positive while robot
@@ -72,7 +72,7 @@ public class RobotContainer {
                drivebase,
                () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
                () -> MathUtil.applyDeadband(driverXbox.getRightX(), OperatorConstants.LEFT_X_DEADBAND),
-               () -> -driverXbox.getRawAxis(2)+driverXbox.getRawAxis(3), () -> true, false, true);
+               () -> -driverXbox.getRawAxis(2)+driverXbox.getRawAxis(3), () -> true, false, false);
        
       drivebase.setDefaultCommand(closedFieldRel);
    }
