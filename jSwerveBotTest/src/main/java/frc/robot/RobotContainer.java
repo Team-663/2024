@@ -18,6 +18,7 @@ import frc.robot.Constants.OperatorConstants;
 
 import frc.robot.commands.swervedrive.auto.Autos;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
+import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 //import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 //import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -35,7 +36,7 @@ import java.io.File;
 public class RobotContainer {
    // The robot's subsystems and commands are defined here...
    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-         "swerve/neo"));
+         "swerve"));
    // CommandJoystick rotationController = new CommandJoystick(1);
    // Replace with CommandPS4Controller or CommandJoystick if needed
    CommandJoystick driverController = new CommandJoystick(1);
@@ -50,20 +51,30 @@ public class RobotContainer {
    public RobotContainer() {
       // Configure the trigger bindings
       configureBindings();
-
+      // 185.0 front left
+      // angle gear ratio default 12.8
+      //https://www.chiefdelphi.com/t/yet-another-generic-swerve-library-yagsl-beta/425148/402
       AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
             // Applies deadbands and inverts controls because joysticks
             // are back-right positive while robot
             // controls are front-left positive
             () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
                   OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
+            () -> MathUtil.applyDeadband(driverXbox.getRightX(),
                   OperatorConstants.LEFT_X_DEADBAND),
-            () -> -driverXbox.getRightX(),
-            () -> -driverXbox.getRightY(),
+               () -> -driverXbox.getLeftTriggerAxis()+driverXbox.getRightTriggerAxis(),
+               () -> 0,
+            //() -> -driverXbox.getRightX(),
+            //() -> -driverXbox.getRightY(),
             false);
 
-      drivebase.setDefaultCommand(closedAbsoluteDrive);
+            TeleopDrive closedFieldRel = new TeleopDrive(
+               drivebase,
+               () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+               () -> MathUtil.applyDeadband(driverXbox.getRightX(), OperatorConstants.LEFT_X_DEADBAND),
+               () -> -driverXbox.getRawAxis(2)+driverXbox.getRawAxis(3), () -> true, false, true);
+       
+      drivebase.setDefaultCommand(closedFieldRel);
    }
 
    /**
