@@ -28,9 +28,12 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
    private final SwerveDrive swerveDrive;
+   private static int useSquaredInputs;
    //for pathfinder auto, might not need this
    //private SwerveAutoBuilder autoBuilder = null;
 
@@ -171,8 +174,8 @@ public class SwerveSubsystem extends SubsystemBase {
     * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
     */
    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY) {
-      xInput = Math.pow(xInput, 2);
-      yInput = Math.pow(yInput, 2);
+      xInput = Math.pow(xInput, OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      yInput = Math.pow(yInput, OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
       return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
             getHeading().getRadians());
    }
@@ -186,10 +189,31 @@ public class SwerveSubsystem extends SubsystemBase {
     * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
     */
    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle) {
-      xInput = Math.pow(xInput, 2);
-      yInput = Math.pow(yInput, 2);
+
+      xInput = Math.pow(xInput, OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      yInput = Math.pow(yInput, OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+
+      
       return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(),
             getHeading().getRadians());
+   }
+
+   public void toggleSquaredInputs()
+   {
+      useSquaredInputs ^= 1;
+   }
+
+   public int getSquaredInputs()
+   {
+      return useSquaredInputs;
+   }
+
+   public static double respectfulPower(double number, int power)
+   {
+      int multiplier = 1;
+      if (number < 0)
+         multiplier = -1;
+      return multiplier * Math.abs(Math.pow(number, power));
    }
 
    /**

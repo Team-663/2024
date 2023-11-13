@@ -9,7 +9,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
+import java.lang.management.OperatingSystemMXBean;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
@@ -64,9 +67,12 @@ public class TeleopDrive extends CommandBase {
    // Called every time the scheduler runs while the command is scheduled.
    @Override
    public void execute() {
-      double xVelocity = Math.pow(vX.getAsDouble(), 3);
-      double yVelocity = Math.pow(vY.getAsDouble(), 3);
-      double angVelocity = Math.pow(omega.getAsDouble(), 3);
+      double xVelocity = SwerveSubsystem.respectfulPower(vX.getAsDouble(), OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      double yVelocity = SwerveSubsystem.respectfulPower(vY.getAsDouble(), OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      double angVelocity = SwerveSubsystem.respectfulPower(omega.getAsDouble(), OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      //double xVelocity = Math.pow(vX.getAsDouble(), OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      //double yVelocity = Math.pow(vY.getAsDouble(), OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
+      //double angVelocity = Math.pow(omega.getAsDouble(), OperatorConstants.JOYSTICK_INPUT_POWER_SCALE);
       SmartDashboard.putNumber("vX", xVelocity);
       SmartDashboard.putNumber("vY", yVelocity);
       SmartDashboard.putNumber("omega", angVelocity);
