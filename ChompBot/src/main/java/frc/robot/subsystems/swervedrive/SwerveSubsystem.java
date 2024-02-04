@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import frc.robot.Constants;
+import frc.robot.Constants.Drivebase;
 import frc.robot.Constants.OperatorConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -43,7 +45,10 @@ public class SwerveSubsystem extends SubsystemBase {
       SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
       try
       {
-         swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Drivebase.MAX_ROBOT_SPEED);
+         double calcSteerConv = SwerveMath.calculateDegreesPerSteeringRotation(Drivebase.STEERING_GEAR_RATIO);
+         double calcDriveConv = SwerveMath.calculateMetersPerRotation(Drivebase.DRIVE_WHEEL_DIAMETER , Drivebase.DRIVE_GEAR_RATIO);
+         //swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Drivebase.MAX_ROBOT_SPEED);
+         swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Drivebase.MAX_ROBOT_SPEED, calcSteerConv, calcDriveConv);
       }
       catch (Exception e)
       {

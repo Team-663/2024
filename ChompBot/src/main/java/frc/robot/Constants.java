@@ -24,6 +24,7 @@ public final class Constants {
    public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
    public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
 
+
    public static final class Auton {
 
       public static final PIDFConfig xAutoPID = new PIDFConfig(0.7, 0, 0);
@@ -39,6 +40,22 @@ public final class Constants {
       // Hold time on motor brakes when disabled
       public static final double WHEEL_LOCK_TIME = 10; // seconds
       public static final double MAX_ROBOT_SPEED = 4; 
+      // Drive conversion factor = 60 * pi * diameter / gear ratio
+      // wheel diameter = 0.09398 meters (3.7 in)
+      // Gear ratio = 8.14:1
+      public static final double DRIVE_GEAR_RATIO = 8.14;
+      public static final double DRIVE_WHEEL_DIAMETER = 0.09398;
+      public static final double DRIVE_CONVERSION_FACTOR = ((60 * Math.PI * 0.09398) / 8.14);
+      // Steering conversion factor = 1 / (steer ratio * 360)
+      // Steering gear ratio = 12.8:1
+      public static final double STEERING_GEAR_RATIO = 12.8;
+      public static final double STEERING_CONVERSION_FACTOR = (1/(12.8*360.0));
+   }
+
+   public static final class ArmConstants {
+      public static final int CANID_SHOOTER_SPARKMAX_1 = 14;
+      public static final int CANID_SHOOTER_SPARKMAX_2 = 15;
+      public static final int CANID_INTAKE_VICTOR = 16;
    }
 
    public static class OperatorConstants {
@@ -47,5 +64,9 @@ public final class Constants {
       public static final double LEFT_X_DEADBAND = 0.01;
       public static final double LEFT_Y_DEADBAND = 0.01;
       public static final int JOYSTICK_INPUT_POWER_SCALE = 2;
+
+      public static final int USB_PORT_XBOX_DRIVER = 0;
+      public static final int USB_PORT_XBOX_OPERATOR = 1;
+
    }
 }

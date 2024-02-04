@@ -15,13 +15,17 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-
 import frc.robot.commands.swervedrive.auto.Autos;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 //import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 //import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import java.io.File;
 
 /**
@@ -37,13 +41,16 @@ public class RobotContainer {
    // The robot's subsystems and commands are defined here...
    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
          "swerve"));
+
+   private final Arm arm = new Arm();
    // CommandJoystick rotationController = new CommandJoystick(1);
    // Replace with CommandPS4Controller or CommandJoystick if needed
-   CommandJoystick driverController = new CommandJoystick(1);
+   //CommandJoystick driverController = new CommandJoystick(1);
 
    // CommandJoystick driverController = new
    // CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-   XboxController driverXbox = new XboxController(0);
+   XboxController driverXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_DRIVER);
+   XboxController operatorXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
 
    /**
     * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,6 +84,12 @@ public class RobotContainer {
                () -> true, false, false);
        
       drivebase.setDefaultCommand(closedFieldRel);
+
+      arm.setDefaultCommand(
+         arm.armByXboxCommand(
+            () -> operatorXbox.getLeftY(),
+            () -> -getOperatorTriggerCombined()
+            ));
    }
 
    /**
@@ -111,5 +124,10 @@ public class RobotContainer {
 
    public void setMotorBrake(boolean brake) {
       drivebase.setMotorBrake(brake);
+   }
+
+   private double getOperatorTriggerCombined()
+   {
+      return operatorXbox.getLeftTriggerAxis() + operatorXbox.getRightTriggerAxis();
    }
 }
