@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -20,7 +21,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 //import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 //import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -42,7 +43,7 @@ public class RobotContainer {
    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
          "swerve"));
 
-   private final Arm arm = new Arm();
+   private final Shooter m_shooter = new Shooter();
    // CommandJoystick rotationController = new CommandJoystick(1);
    // Replace with CommandPS4Controller or CommandJoystick if needed
    //CommandJoystick driverController = new CommandJoystick(1);
@@ -50,7 +51,8 @@ public class RobotContainer {
    // CommandJoystick driverController = new
    // CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
    XboxController driverXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_DRIVER);
-   XboxController operatorXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
+   //XboxController operatorXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
+   //CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
 
    /**
     * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -85,11 +87,12 @@ public class RobotContainer {
        
       drivebase.setDefaultCommand(closedFieldRel);
 
-      arm.setDefaultCommand(
-         arm.armByXboxCommand(
-            () -> operatorXbox.getLeftY(),
-            () -> -getOperatorTriggerCombined()
-            ));
+      m_shooter.setDefaultCommand(m_shooter.shooterIdleCommand());
+      //m_shooter.setDefaultCommand(m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
+      //   m_shooter.shooterByXboxCommand(
+      //      () -> operatorXbox.getLeftY(),
+      //      () -> -getOperatorTriggerCombined()
+      //      ));
    }
 
    /**
@@ -110,6 +113,16 @@ public class RobotContainer {
       // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
       new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
       new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+      
+      //new JoystickButton(operatorXbox, 1).onTrue(m_shooter.armByXboxCommand(getOperatorTriggerCombined()));
+      //operatorXbox.x().onTrue(m_shooter.intakeNoteCommand());
+      //operatorXbox.a().onTrue(m_shooter.shootNoteCommand(3000.0));
+
+      //operatorXbox.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.15).onTrue(
+      //   m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
+
+      //new JoystickButton(operatorXbox, 1).onTrue(new StartEndCommand(m_shooter::intakeNoteCommand, null,m_shooter));
+
    }
 
    /**
@@ -128,6 +141,7 @@ public class RobotContainer {
 
    private double getOperatorTriggerCombined()
    {
-      return operatorXbox.getLeftTriggerAxis() + operatorXbox.getRightTriggerAxis();
+      return 0.0;
+      //return operatorXbox.getLeftTriggerAxis() + operatorXbox.getRightTriggerAxis();
    }
 }

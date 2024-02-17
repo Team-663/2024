@@ -56,6 +56,39 @@ public final class Constants {
       public static final int CANID_SHOOTER_SPARKMAX_1 = 14;
       public static final int CANID_SHOOTER_SPARKMAX_2 = 15;
       public static final int CANID_INTAKE_VICTOR = 16;
+      public static final int CANID_ARM_TALON_1 = 17;
+      public static final int CANID_ARM_VICTOR_2 = 18;
+
+      public static final double INTAKE_MOTOR_SPEED = 0.6; // vibe based engineering
+      public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
+      public static final double LASER_BEAM_BREAK_THRESHOLD = 16.0; // If laser reading is < this value, we have a note inside
+   
+
+      /*
+      Shooter PID values from 2020 robot but these seem like junk
+       #define SHOOTER_PID_P 0.000040
+         #define SHOOTER_PID_I 0.0000004
+         #define SHOOTER_PID_D 0.000000
+         #define SHOOTER_PID_F 0.000005
+       */
+      // TODO: TUNE
+      public static final double SHOOTER_PID_P = 0.001;
+      public static final double SHOOTER_PID_I = 0.0;
+      public static final double SHOOTER_PID_D = 0.0;
+      public static final double SHOOTER_PID_F = 0.00035;
+
+      // Might not need these, use arbitrary FF term instead
+      public static final double ARM_KG = 0.59;
+      public static final double ARM_KV = 3.29;
+      public static final double ARM_KA = 0.05;
+
+      public static final double ARM_MAX_PID_ERROR = 1.0;
+      public static final double ARM_MAX_PID_POWER = 0.85;
+      public static final double ARM_PID_P = 0.0;
+      public static final double ARM_PID_I = 0.0;
+      public static final double ARM_PID_D = 0.0;
+      public static final double ARM_PID_F = 0.0;
+
    }
 
    public static class OperatorConstants {
