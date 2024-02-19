@@ -48,8 +48,9 @@ public final class Constants {
       public static final double DRIVE_CONVERSION_FACTOR = ((60 * Math.PI * 0.09398) / 8.14);
       // Steering conversion factor = 1 / (steer ratio * 360)
       // Steering gear ratio = 12.8:1
-      public static final double STEERING_GEAR_RATIO = 12.8;
-      public static final double STEERING_CONVERSION_FACTOR = (1/(12.8*360.0));
+      public static final double STEERING_GEAR_RATIO_OLD = 12.8;
+      public static final double STEERING_GEAR_RATIO = (150.0/7.0); // FROM SDS
+      //public static final double STEERING_CONVERSION_FACTOR = (1/(12.8*360.0));
    }
 
    public static final class ArmConstants {
