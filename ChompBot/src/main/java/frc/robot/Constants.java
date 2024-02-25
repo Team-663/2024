@@ -60,11 +60,12 @@ public final class Constants {
       public static final int CANID_ARM_TALON_1 = 17;
       public static final int CANID_ARM_VICTOR_2 = 18;
 
-      public static final double INTAKE_MOTOR_SPEED = 0.6; // vibe based engineering
+      public static final double INTAKE_MOTOR_SPEED = 0.75; // vibe based engineering
       public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
       public static final double LASER_BEAM_BREAK_THRESHOLD = 16.0; // If laser reading is < this value, we have a note inside
    
-
+      public static final double ARM_ENCODER_TICS_PER_DEG = 360.0/4096.0;
+      public static final double ARM_MAX_OUTPUT_POWER = 0.6;
       /*
       Shooter PID values from 2020 robot but these seem like junk
        #define SHOOTER_PID_P 0.000040
@@ -84,7 +85,7 @@ public final class Constants {
       public static final double ARM_KA = 0.05;
 
       public static final double ARM_MAX_PID_ERROR = 1.0;
-      public static final double ARM_MAX_PID_POWER = 0.85;
+      public static final double ARM_MAX_PID_POWER = 0.6;
       public static final double ARM_PID_P = 0.0;
       public static final double ARM_PID_I = 0.0;
       public static final double ARM_PID_D = 0.0;

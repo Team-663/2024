@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,7 +51,8 @@ public class RobotContainer {
 
    // CommandJoystick driverController = new
    // CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-   XboxController driverXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_DRIVER);
+   CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_DRIVER);
+   CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
    //XboxController operatorXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
    //CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
 
@@ -87,7 +89,8 @@ public class RobotContainer {
        
       drivebase.setDefaultCommand(closedFieldRel);
 
-      m_shooter.setDefaultCommand(m_shooter.shooterIdleCommand());
+      m_shooter.setDefaultCommand(m_shooter.intakeIdleCommand());
+
       //m_shooter.setDefaultCommand(m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
       //   m_shooter.shooterByXboxCommand(
       //      () -> operatorXbox.getLeftY(),
@@ -111,18 +114,27 @@ public class RobotContainer {
     */
    private void configureBindings() {
       // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-      new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-      new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+      driverXbox.start().onTrue(new InstantCommand(drivebase::zeroGyro));
+      driverXbox.x().whileTrue(m_shooter.intakeNoteCommand());
+      driverXbox.a().whileTrue(m_shooter.shootNoteCommandOpenLoop(0.5));
+      driverXbox.rightTrigger(0.05).whileTrue(m_shooter.shootNoteCommandOpenLoop2(() -> driverXbox.getRightTriggerAxis()));
+      // DONT THINK WE NEED THIS driverXbox.rightTrigger(0.05).whileFalse(m_shooter.intakeIdleCommand());
       
-      //new JoystickButton(operatorXbox, 1).onTrue(m_shooter.armByXboxCommand(getOperatorTriggerCombined()));
-      //operatorXbox.x().onTrue(m_shooter.intakeNoteCommand());
-      //operatorXbox.a().onTrue(m_shooter.shootNoteCommand(3000.0));
-
+      driverXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -driverXbox.getLeftTriggerAxis()));
+      
+      operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> operatorXbox.getLeftTriggerAxis()));
+      operatorXbox.rightTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> -operatorXbox.getRightTriggerAxis()));
       //operatorXbox.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.15).onTrue(
       //   m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
 
       //new JoystickButton(operatorXbox, 1).onTrue(new StartEndCommand(m_shooter::intakeNoteCommand, null,m_shooter));
-
+      /* try using CommandJoystick...
+      new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+      new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+      
+      new JoystickButton(driverXbox, XboxController.Button.kX.value).onTrue(m_shooter.intakeNoteCommand());
+      new JoystickButton(driverXbox, XboxController.Button.kA.value).onTrue(m_shooter.shootNoteCommand(0.75));
+      */
    }
 
    /**
@@ -143,5 +155,9 @@ public class RobotContainer {
    {
       return 0.0;
       //return operatorXbox.getLeftTriggerAxis() + operatorXbox.getRightTriggerAxis();
+   }
+   private double getDriverTriggerCombined()
+   {
+      return driverXbox.getLeftTriggerAxis() + driverXbox.getRightTriggerAxis();
    }
 }

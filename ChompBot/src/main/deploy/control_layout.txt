@@ -1,0 +1,23 @@
+Control Layout plan:
+
+Driver Xbox:
+
+LeftY: translate up/left
+LeftX: translate left/right
+RightX: rotate Z
+
+??? Unlock Climber solenoids
+L/R triggers: L/R climber UP
+L/R bumpers: L/R climbers DOWN
+
+Operator Xbox:
+X: intake
+A: amp score position
+B: close score position
+Y: far score position
+
+L bumper: spin up shooter
+L trigger: spin up shooter
+
+LeftY: run intake manually
+???: run shooter backwards

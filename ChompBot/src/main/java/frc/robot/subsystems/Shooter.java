@@ -20,7 +20,7 @@ import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -31,17 +31,17 @@ import frc.robot.Constants.ArmConstants;
 
 public class Shooter extends SubsystemBase {
    /** Creates a new Arm. */
-   //private final CANSparkMax m_shooterMotorLeader = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_1,
-   //      MotorType.kBrushless);
-   //private final CANSparkMax m_shooterMotorFollower = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_2,
-   //      MotorType.kBrushless);
-   //private final WPI_VictorSPX m_intakeMotor = new WPI_VictorSPX(Constants.ArmConstants.CANID_INTAKE_VICTOR);
+   private final CANSparkMax m_shooterMotorLeader = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_1,
+         MotorType.kBrushless);
+   private final CANSparkMax m_shooterMotorFollower = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_2,
+         MotorType.kBrushless);
+   private final WPI_VictorSPX m_intakeMotor = new WPI_VictorSPX(Constants.ArmConstants.CANID_INTAKE_VICTOR);
    
    private final WPI_TalonSRX m_armMotor = new WPI_TalonSRX(ArmConstants.CANID_ARM_TALON_1);
    private final WPI_VictorSPX m_armMotor2 = new WPI_VictorSPX(ArmConstants.CANID_ARM_VICTOR_2);
 
-   //private final SparkPIDController m_shooterPID = m_shooterMotorLeader.getPIDController();
-   //private final RelativeEncoder m_shooterEnc = m_shooterMotorLeader.getEncoder();   
+   private final SparkPIDController m_shooterPID = m_shooterMotorLeader.getPIDController();
+   private final RelativeEncoder m_shooterEnc = m_shooterMotorLeader.getEncoder();   
    
    private final LaserCan m_laser = new LaserCan(21);
    private boolean m_laserValidMeasurement = false;
@@ -57,15 +57,15 @@ public class Shooter extends SubsystemBase {
    private GenericEntry sbtArmSpeed = tab.add("Arm Speed", 0).getEntry();
    private GenericEntry sbtArmPosition = tab.add("Arm Position", 0).getEntry();
    private GenericEntry stbArmXboxInput = tab.add("Arm Xbox Input", 0).getEntry();
+   private GenericEntry stbShootOpenVal = tab.add("Shoot Cmd Value", 0).getEntry();
    public Shooter() {
-      //m_intakeMotor.setNeutralMode(NeutralMode.Brake);
-      //m_intakeMotor.setInverted(true);
-      //m_shooterMotorLeader.setIdleMode(IdleMode.kCoast);
-      //m_shooterMotorLeader.setInverted(true);
+      m_intakeMotor.setNeutralMode(NeutralMode.Brake);
+      m_intakeMotor.setInverted(false);
+      m_shooterMotorLeader.setIdleMode(IdleMode.kCoast);
+      m_shooterMotorLeader.setInverted(true);
       
-      //m_shooterMotorFollower.setIdleMode(IdleMode.kCoast);
-      //m_shooterMotorFollower.follow(m_shooterMotorLeader, true);
-
+      m_shooterMotorFollower.setIdleMode(IdleMode.kCoast);
+      m_shooterMotorFollower.follow(m_shooterMotorLeader, true);
       initLaserCAN();
       initShooterMotorSettings();
       initArmMotorSettings();
@@ -74,6 +74,8 @@ public class Shooter extends SubsystemBase {
 
    private boolean CheckIfNoteInIntake()
    {
+      return false;
+      /*
       if (m_laserDistInches < Constants.ArmConstants.LASER_BEAM_BREAK_THRESHOLD)
       {
          return true;
@@ -82,6 +84,7 @@ public class Shooter extends SubsystemBase {
       {
          return false;
       }
+      */
    }
 
    private void armByXbox(double armValue)
@@ -105,17 +108,27 @@ public class Shooter extends SubsystemBase {
       else
          intakeIdle();
 
+      
+
    }
    private void intakeIdle()
    {
-      //m_intakeMotor.stopMotor();
-      //m_shooterPID.setReference(0.0, ControlType.kVelocity);
+      m_intakeMotor.stopMotor();
+      shooterIdle();
+      m_armMotor.stopMotor();
+    
 
+   }
+
+   private void shooterIdle()
+   {
+      m_shooterMotorLeader.stopMotor();
+      //m_shooterPID.setReference(0.0, ControlType.kVelocity);
    }
 
    private void intakeMotorSet(double val)
    {
-      //m_intakeMotor.set(val);
+      m_intakeMotor.set(val);
    }
 
    private void shooterEnablePID()
@@ -130,17 +143,28 @@ public class Shooter extends SubsystemBase {
 
       // TODO: if beam is broken, drive the intake backwards slowly-ish
       // Dont do anything else until beam is no longer broken
-   
+      
       m_shooterSetpoint = targetRPM;
       shooterEnablePID();
       if (m_isShooterAtSetpoint)
          intakeMotorSet(Constants.ArmConstants.INTAKE_MOTOR_SHOOT_SPEED);
    }
 
-   public Command armByXboxCommand(double armVal)
+   private void shootNoteOpenLoop(double speed)
    {
-      return run(() -> armByXbox(armVal)).withName("armByXbox");
+      sbtLaserEntry.setDouble(speed);
+      SmartDashboard.putNumber("Shooter OpenLoop Spd", speed);
+      m_shooterMotorLeader.set(speed);
+      intakeMotorSet(Constants.ArmConstants.INTAKE_MOTOR_SHOOT_SPEED);
    }
+
+   public Command armByXboxCommand(DoubleSupplier armVal)
+   {
+      //return run(() -> armByXbox(armVal*Constants.ArmConstants.ARM_MAX_OUTPUT_POWER)).withName("armByXbox");
+      return run(() -> armByXbox(armVal.getAsDouble())
+      ).withName("ArmByXbox2"); 
+   }
+
    public Command shooterByXboxCommand(DoubleSupplier intake, DoubleSupplier shooter) {
       return run(() -> shooterByXbox(intake.getAsDouble(), shooter.getAsDouble()))
             .withName("shooterByXbox");
@@ -148,7 +172,9 @@ public class Shooter extends SubsystemBase {
 
    public Command intakeNoteCommand()
    {
-      return run(() -> intakeNote()).withName("intakeNote");
+      return startEnd(() -> intakeNote()
+                     ,() -> intakeIdleCommand()
+      ).withName("intakeNote");
    }
 
    public Command shootNoteCommand(double rpm)
@@ -156,7 +182,26 @@ public class Shooter extends SubsystemBase {
       return run(() -> shootNote(rpm)).withName("shootNote");
    }
 
-   public Command shooterIdleCommand()
+   public Command shootNoteCommandOpenLoop(double speed)
+   {
+      return startEnd(() -> shootNoteOpenLoop(speed)
+                  , ()-> shootNoteOpenLoop(0.0)
+      ).withName("shootOpenLoop");
+   }
+
+   public Command shootNoteCommandOpenLoop2(DoubleSupplier speed)
+   {
+
+      return run(() -> shootNoteOpenLoop(speed.getAsDouble())
+      ).withName("shootOpenLoop2");
+   }
+
+   public Command intakeManualSpeed(DoubleSupplier speed)
+   {
+      return run(() -> intakeMotorSet(speed.getAsDouble())).withName("intakeManualSpd");
+   }
+
+   public Command intakeIdleCommand()
    {
       return run(() -> intakeIdle()).withName("idle");
    }
@@ -201,7 +246,7 @@ public class Shooter extends SubsystemBase {
    private void UpdateShuffleboardValues()
    {
       sbtLaserEntry.setDouble(m_laserDistInches);
-      //sbtShooterSpeed.setDouble(m_shooterEnc.getVelocity());
+      sbtShooterSpeed.setDouble(m_shooterEnc.getVelocity());
       sbtNoteInsideIntake.setBoolean(CheckIfNoteInIntake());
       sbtShooterSetpoint.setDouble(m_shooterSetpoint);
       sbtArmSpeed.setDouble((m_armMotor.get()));
@@ -225,13 +270,15 @@ public class Shooter extends SubsystemBase {
 
       //m_armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
       //m_armMotor.SetSensorPhase(true);
-      m_armMotor.configAllowableClosedloopError(0, ArmConstants.ARM_MAX_PID_ERROR);
-      m_armMotor.configClosedLoopPeakOutput(0, ArmConstants.ARM_MAX_PID_POWER);
+      //m_armMotor.configAllowableClosedloopError(0, ArmConstants.ARM_MAX_PID_ERROR);
+      //m_armMotor.configClosedLoopPeakOutput(0, ArmConstants.ARM_MAX_PID_POWER);
 
       m_armMotor.config_kP(0, ArmConstants.ARM_PID_P);
       m_armMotor.config_kP(0, ArmConstants.ARM_PID_I);
       m_armMotor.config_kP(0, ArmConstants.ARM_PID_D);
       m_armMotor.config_kP(0, ArmConstants.ARM_PID_F);
+
+      //https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html#arbitrary-feed-forward
       /* 
       m_elevator.ConfigForwardSoftLimitThreshold(-20000.0, kTimeoutMs);
       m_elevator.ConfigForwardSoftLimitEnable(false);
