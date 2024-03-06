@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
-
+import java.lang.Math;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.ConfigurationFailedException;
 
@@ -33,8 +33,10 @@ public class Shooter extends SubsystemBase {
    /** Creates a new Arm. */
    private final CANSparkMax m_shooterMotorLeader = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_1,
          MotorType.kBrushless);
-   private final CANSparkMax m_shooterMotorFollower = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_2,
-         MotorType.kBrushless);
+   
+   // Take out follower motor for now
+   //private final CANSparkMax m_shooterMotorFollower = new CANSparkMax(Constants.ArmConstants.CANID_SHOOTER_SPARKMAX_2,
+   //      MotorType.kBrushless);
    private final WPI_VictorSPX m_intakeMotor = new WPI_VictorSPX(Constants.ArmConstants.CANID_INTAKE_VICTOR);
    
    private final WPI_TalonSRX m_armMotor = new WPI_TalonSRX(ArmConstants.CANID_ARM_TALON_1);
@@ -59,32 +61,29 @@ public class Shooter extends SubsystemBase {
    private GenericEntry stbArmXboxInput = tab.add("Arm Xbox Input", 0).getEntry();
    private GenericEntry stbShootOpenVal = tab.add("Shoot Cmd Value", 0).getEntry();
    public Shooter() {
+      m_shooterMotorLeader.restoreFactoryDefaults();
+      //m_shooterMotorFollower.restoreFactoryDefaults();
       m_intakeMotor.setNeutralMode(NeutralMode.Brake);
       m_intakeMotor.setInverted(false);
       m_shooterMotorLeader.setIdleMode(IdleMode.kCoast);
       m_shooterMotorLeader.setInverted(true);
       
-      m_shooterMotorFollower.setIdleMode(IdleMode.kCoast);
-      m_shooterMotorFollower.follow(m_shooterMotorLeader, true);
+      //m_shooterMotorFollower.setIdleMode(IdleMode.kCoast);
+      //m_shooterMotorFollower.follow(m_shooterMotorLeader, true);
       initLaserCAN();
       initShooterMotorSettings();
       initArmMotorSettings();
 
    }
 
-   private boolean CheckIfNoteInIntake()
+   public boolean CheckIfNoteInIntake()
    {
-      return false;
-      /*
-      if (m_laserDistInches < Constants.ArmConstants.LASER_BEAM_BREAK_THRESHOLD)
-      {
-         return true;
-      }
-      else
-      {
-         return false;
-      }
-      */
+      return (m_laserDistInches < Constants.ArmConstants.LASER_BEAM_BREAK_THRESHOLD);    
+   }
+
+   public boolean IsShooterUpToSpeed()
+   {
+      return m_isShooterAtSetpoint;
    }
 
    private void armByXbox(double armValue)
@@ -93,13 +92,15 @@ public class Shooter extends SubsystemBase {
       m_armMotor.set(armValue);
    }
 
+
+
    private void shooterByXbox(double intake, double shooter)
    {
       //m_intakeMotor.set(intake);
       //m_shooterMotorLeader.set(shooter);
    }
 
-   private void intakeNote()
+   public void intakeNote()
    {
       // run intake motors at intake speed
       // if beam is broken, stop
@@ -120,20 +121,33 @@ public class Shooter extends SubsystemBase {
 
    }
 
-   private void shooterIdle()
+   public void intakeBackwardSlow(boolean enable)
    {
-      m_shooterMotorLeader.stopMotor();
+      if (enable)
+      {
+         m_intakeMotor.set(Constants.ArmConstants.INTAKE_BACK_SLOW_SPEED);
+      }
+      else
+      {
+         m_intakeMotor.set(0.0);
+      }
+   }
+
+   public void shooterIdle()
+   {
+      m_shooterMotorLeader.set(0.0);
       //m_shooterPID.setReference(0.0, ControlType.kVelocity);
    }
 
-   private void intakeMotorSet(double val)
+   public void intakeMotorSet(double val)
    {
       m_intakeMotor.set(val);
    }
 
-   private void shooterEnablePID()
+   public void shooterEnablePID(double setpoint)
    {
-      //m_shooterPID.setReference(m_shooterSetpoint, ControlType.kVelocity);
+      m_shooterSetpoint = setpoint;
+      m_shooterPID.setReference(setpoint, ControlType.kVelocity);
    }
 
    private void shootNote(double targetRPM)
@@ -145,14 +159,14 @@ public class Shooter extends SubsystemBase {
       // Dont do anything else until beam is no longer broken
       
       m_shooterSetpoint = targetRPM;
-      shooterEnablePID();
+      shooterEnablePID(targetRPM);
       if (m_isShooterAtSetpoint)
          intakeMotorSet(Constants.ArmConstants.INTAKE_MOTOR_SHOOT_SPEED);
    }
 
    private void shootNoteOpenLoop(double speed)
    {
-      sbtLaserEntry.setDouble(speed);
+      stbShootOpenVal.setDouble(speed);
       SmartDashboard.putNumber("Shooter OpenLoop Spd", speed);
       m_shooterMotorLeader.set(speed);
       intakeMotorSet(Constants.ArmConstants.INTAKE_MOTOR_SHOOT_SPEED);
@@ -182,10 +196,18 @@ public class Shooter extends SubsystemBase {
       return run(() -> shootNote(rpm)).withName("shootNote");
    }
 
+   public Command shooteNotePIDTest(double rpm)
+   {
+      return startEnd(
+         () -> shooterEnablePID(rpm)
+         ,() -> shooterIdle()
+         ).withName("shootPidTest");
+   }
+
    public Command shootNoteCommandOpenLoop(double speed)
    {
       return startEnd(() -> shootNoteOpenLoop(speed)
-                  , ()-> shootNoteOpenLoop(0.0)
+                  , ()-> shooterIdle()
       ).withName("shootOpenLoop");
    }
 
@@ -255,20 +277,40 @@ public class Shooter extends SubsystemBase {
 
    private void initShooterMotorSettings()
    {
-      //m_shooterPID.setP(ArmConstants.SHOOTER_PID_P);
-      //m_shooterPID.setI(ArmConstants.SHOOTER_PID_I);
-      //m_shooterPID.setD(ArmConstants.SHOOTER_PID_D);
-      //m_shooterPID.setFF(ArmConstants.SHOOTER_PID_F);
+      m_shooterMotorLeader.setSmartCurrentLimit(40);
+      //m_shooterMotorFollower.setSmartCurrentLimit(40);
+      m_shooterMotorLeader.setClosedLoopRampRate(0.5);
+      //m_shooterMotorFollower.setClosedLoopRampRate(0.5);
+      m_shooterPID.setP(ArmConstants.SHOOTER_PID_P);
+      m_shooterPID.setI(ArmConstants.SHOOTER_PID_I);
+      m_shooterPID.setD(ArmConstants.SHOOTER_PID_D);
+      m_shooterPID.setFF(ArmConstants.SHOOTER_PID_F);
+
+      m_shooterPID.setOutputRange(0.0, 0.75);
 
    }
    private void initArmMotorSettings()
    {
       m_armMotor.configFactoryDefault();
-      m_armMotor2.follow(m_armMotor);
+      m_armMotor2.configFactoryDefault();
+
       m_armMotor.setNeutralMode(NeutralMode.Brake);
       m_armMotor2.setNeutralMode(NeutralMode.Brake);
+      m_armMotor2.follow(m_armMotor);
 
-      //m_armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+      m_armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+      m_armMotor.setSensorPhase(true);
+      m_armMotor.configForwardSoftLimitEnable(true);
+      m_armMotor.configForwardSoftLimitThreshold(ArmConstants.ARM_SOFT_LIMIT_LOWER);
+
+      m_armMotor.configReverseSoftLimitEnable(true);
+      m_armMotor.configReverseSoftLimitThreshold(ArmConstants.ARM_SOFT_LIMIT_UPPER);
+
+      m_armMotor.configPeakOutputForward(ArmConstants.ARM_PEAK_DOWN_POWER);
+      m_armMotor.configPeakOutputReverse(ArmConstants.ARM_PEAK_UP_POWER);
+
+
+
       //m_armMotor.SetSensorPhase(true);
       //m_armMotor.configAllowableClosedloopError(0, ArmConstants.ARM_MAX_PID_ERROR);
       //m_armMotor.configClosedLoopPeakOutput(0, ArmConstants.ARM_MAX_PID_POWER);
@@ -279,12 +321,6 @@ public class Shooter extends SubsystemBase {
       m_armMotor.config_kP(0, ArmConstants.ARM_PID_F);
 
       //https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html#arbitrary-feed-forward
-      /* 
-      m_elevator.ConfigForwardSoftLimitThreshold(-20000.0, kTimeoutMs);
-      m_elevator.ConfigForwardSoftLimitEnable(false);
-      m_elevator.ConfigReverseSoftLimitThreshold(-20000.0, kTimeoutMs);
-      m_elevator.ConfigReverseSoftLimitEnable(false);
-       */
    }
 
    @Override
@@ -292,6 +328,13 @@ public class Shooter extends SubsystemBase {
       UpdateLaserDistance();
       UpdateShuffleboardValues();
 
+      if ( (Math.abs(m_shooterEnc.getVelocity() - m_shooterSetpoint) < Constants.ArmConstants.SHOOTER_VELOCITY_RANGE)
+            && m_shooterSetpoint > 0 )
+         m_isShooterAtSetpoint = true;
+      else
+         m_isShooterAtSetpoint = false;
+
+      SmartDashboard.putNumber("ArmAbsEnc", m_armMotor.getSelectedSensorPosition());
       // This method will be called once per scheduler run
    }
 

@@ -17,18 +17,24 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.intake.intakeBackupNote;
+import frc.robot.commands.intake.intakeOneNote;
+import frc.robot.commands.shooter.shootNote;
 import frc.robot.commands.swervedrive.auto.Autos;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.climber.climbByXbox;
 //import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 //import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import java.io.File;
+import java.util.function.BooleanSupplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -45,6 +51,7 @@ public class RobotContainer {
          "swerve"));
 
    private final Shooter m_shooter = new Shooter();
+   private final Climber m_climber = new Climber();
    // CommandJoystick rotationController = new CommandJoystick(1);
    // Replace with CommandPS4Controller or CommandJoystick if needed
    //CommandJoystick driverController = new CommandJoystick(1);
@@ -90,6 +97,7 @@ public class RobotContainer {
       drivebase.setDefaultCommand(closedFieldRel);
 
       m_shooter.setDefaultCommand(m_shooter.intakeIdleCommand());
+      m_climber.setDefaultCommand(m_climber.climberIdleCommand());
 
       //m_shooter.setDefaultCommand(m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
       //   m_shooter.shooterByXboxCommand(
@@ -113,17 +121,58 @@ public class RobotContainer {
     * joysticks}.
     */
    private void configureBindings() {
-      // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+      
+      // Driver Xbox controls swerve and Climber
       driverXbox.start().onTrue(new InstantCommand(drivebase::zeroGyro));
-      driverXbox.x().whileTrue(m_shooter.intakeNoteCommand());
-      driverXbox.a().whileTrue(m_shooter.shootNoteCommandOpenLoop(0.5));
-      driverXbox.rightTrigger(0.05).whileTrue(m_shooter.shootNoteCommandOpenLoop2(() -> driverXbox.getRightTriggerAxis()));
+      //driverXbox.leftTrigger(0.05).whileTrue(m_climber.moveClimberUpCommand(() -> operatorXbox.getLeftTriggerAxis(), false));
+      //driverXbox.rightTrigger(0.05).whileTrue(m_climber.moveClimberUpCommand(() -> operatorXbox.getLeftTriggerAxis(), true));
+      
+      //driverXbox.a().whileTrue(m_climber.climberUnlockCommand());
+      driverXbox.a().whileTrue(new climbByXbox(m_climber
+                                                            , () -> driverXbox.a().getAsBoolean()
+                                                            , () -> driverXbox.getLeftTriggerAxis()
+                                                            , () -> driverXbox.getRightTriggerAxis()
+                                                            , () -> driverXbox.leftBumper().getAsBoolean()
+                                                            , () -> driverXbox.rightBumper().getAsBoolean()
+                                                            ));
+                        
+      driverXbox.a().negate().and(driverXbox.leftTrigger(0.05)).and(driverXbox.rightTrigger(0.5)).whileTrue(new climbByXbox(m_climber
+                                                            , () -> true
+                                                            , () -> driverXbox.getLeftTriggerAxis()
+                                                            , () -> driverXbox.getRightTriggerAxis()
+                                                            , () -> false
+                                                            , () -> false
+                                                            ));
+      
+      /*
+      driverXbox.leftTrigger(0.05).or(driverXbox.rightTrigger(0.05)).whileTrue(new climbByXbox(m_climber
+                                                            , () -> true
+                                                            , () -> driverXbox.getLeftTriggerAxis()
+                                                            , () -> driverXbox.getRightTriggerAxis()
+                                                            , () -> false
+                                                            , () -> false
+                                                            ));
+       */
+      // Operator intakes and shoots
+      //operatorXbox.axisGreaterThan(XboxController.Axis.kLeftY, 0.0);
+
+      operatorXbox.x().whileTrue(new intakeOneNote(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
+      //operatorXbox.a().whileTrue(m_shooter.shootNoteCommandOpenLoop(0.5));
+      operatorXbox.b().whileTrue(m_shooter.shooteNotePIDTest(3000.0));
+      //driverXbox.y().whileTrue(m_shooter.shooteNotePIDTest(5000.0));
+      operatorXbox.y().whileTrue(new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
+      operatorXbox.a().whileTrue(new shootNote(m_shooter, 2000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
+      //driverXbox.rightTrigger(0.05).whileTrue(m_shooter.shootNoteCommandOpenLoop2(() -> driverXbox.getRightTriggerAxis()));
       // DONT THINK WE NEED THIS driverXbox.rightTrigger(0.05).whileFalse(m_shooter.intakeIdleCommand());
       
-      driverXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -driverXbox.getLeftTriggerAxis()));
-      
-      operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> operatorXbox.getLeftTriggerAxis()));
-      operatorXbox.rightTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> -operatorXbox.getRightTriggerAxis()));
+      operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -operatorXbox.getLeftTriggerAxis()));
+      operatorXbox.axisGreaterThan(
+                                    XboxController.Axis.kLeftY.value, 0.1).or(
+                                    operatorXbox.axisLessThan(XboxController.Axis.kLeftY.value, -0.1)).whileTrue(
+                                       m_shooter.armByXboxCommand(()->operatorXbox.getLeftY()));
+
+      //operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> operatorXbox.getLeftTriggerAxis()));
+      //operatorXbox.rightTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> -operatorXbox.getRightTriggerAxis()));
       //operatorXbox.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.15).onTrue(
       //   m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
 
@@ -150,7 +199,6 @@ public class RobotContainer {
    public void setMotorBrake(boolean brake) {
       drivebase.setMotorBrake(brake);
    }
-
    private double getOperatorTriggerCombined()
    {
       return 0.0;

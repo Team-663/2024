@@ -60,9 +60,11 @@ public final class Constants {
       public static final int CANID_ARM_TALON_1 = 17;
       public static final int CANID_ARM_VICTOR_2 = 18;
 
-      public static final double INTAKE_MOTOR_SPEED = 0.75; // vibe based engineering
+      public static final double INTAKE_MOTOR_SPEED = 0.8; // was 0.75 with the 775Pro
       public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
-      public static final double LASER_BEAM_BREAK_THRESHOLD = 16.0; // If laser reading is < this value, we have a note inside
+      public static final double INTAKE_BACK_SLOW_SPEED = -0.35;
+
+      public static final double LASER_BEAM_BREAK_THRESHOLD = 13.1; // If laser reading is < this value, we have a note inside
    
       public static final double ARM_ENCODER_TICS_PER_DEG = 360.0/4096.0;
       public static final double ARM_MAX_OUTPUT_POWER = 0.6;
@@ -74,10 +76,19 @@ public final class Constants {
          #define SHOOTER_PID_F 0.000005
        */
       // TODO: TUNE
-      public static final double SHOOTER_PID_P = 0.001;
+      public static final double SHOOTER_PID_P = 0.000600;
+      public static final double SHOOTER_PID_F = 0.00004;
       public static final double SHOOTER_PID_I = 0.0;
       public static final double SHOOTER_PID_D = 0.0;
-      public static final double SHOOTER_PID_F = 0.00035;
+  
+      public static final double SHOOTER_MAX_NATIVE_VELOCITY = 21650.0;
+      public static final double SHOOTER_VELOCITY_PER_RPM = 3.3934; // asuming 21650/6380
+      public static final double SHOOTER_VELOCITY_RANGE = 2000.0;
+
+      public static final double ARM_SOFT_LIMIT_LOWER = -2400;
+      public static final double ARM_SOFT_LIMIT_UPPER = -3870;
+      public static final double ARM_PEAK_UP_POWER = -0.5;
+      public static final double ARM_PEAK_DOWN_POWER = 0.25;
 
       // Might not need these, use arbitrary FF term instead
       public static final double ARM_KG = 0.59;
@@ -90,6 +101,21 @@ public final class Constants {
       public static final double ARM_PID_I = 0.0;
       public static final double ARM_PID_D = 0.0;
       public static final double ARM_PID_F = 0.0;
+
+   }
+
+   public static final class ClimberConstants
+   {
+      public static final int CANID_CLIMBER_VICTOR_L = 24;
+      public static final int CANID_CLIMBER_VICTOR_R = 25;
+
+      public static final int CHANNEL_CLIMBER_RELAY_L = 0;
+      public static final int CHANNEL_CLIMBER_RELAY_R = 1;
+
+      public static final int CHANNEL_CLIMBER_DIGITALINPUT_L = 0;
+      public static final int CHANNEL_CLIMBER_DIGITALINPUT_R = 1;
+
+      public static final double CLIMBER_UP_SPEED = -0.4;
 
    }
 
