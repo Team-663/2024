@@ -75,9 +75,10 @@ public final class Constants {
          #define SHOOTER_PID_D 0.000000
          #define SHOOTER_PID_F 0.000005
        */
-      // TODO: TUNE
-      public static final double SHOOTER_PID_P = 0.000600;
-      public static final double SHOOTER_PID_F = 0.00004;
+      // TODO: TUNE //P0085 and f00009 
+      public static final double SHOOTER_PID_P = 0.00000;
+      public static final double SHOOTER_PID_F = 0.00018
+      ;
       public static final double SHOOTER_PID_I = 0.0;
       public static final double SHOOTER_PID_D = 0.0;
   
@@ -85,10 +86,20 @@ public final class Constants {
       public static final double SHOOTER_VELOCITY_PER_RPM = 3.3934; // asuming 21650/6380
       public static final double SHOOTER_VELOCITY_RANGE = 2000.0;
 
-      public static final double ARM_SOFT_LIMIT_LOWER = -2400;
-      public static final double ARM_SOFT_LIMIT_UPPER = -3870;
-      public static final double ARM_PEAK_UP_POWER = -0.5;
-      public static final double ARM_PEAK_DOWN_POWER = 0.25;
+      public static final double ARM_SOFT_LIMIT_LOWER = 2400;
+      public static final double ARM_SOFT_LIMIT_UPPER = 3870;
+
+      public static final double ARM_SOFT_LIMIT_TEST_CLOSE_LOWER = 2700;
+      public static final double ARM_SOFT_LIMIT_TEST_CLOSE_UPPER = 3500;
+
+      public static final double ARM_DOWN_ENCODER_VALUE = 2380;
+      public static final double ARM_CLOSE_SHOT_SETPOINT = 2920; // was 2837
+      public static final double ARM_LONG_SHOT_SETPOINT = 3050;
+      //2815-2860 close shot
+      // 3010 - 3050 long shot
+
+      public static final double ARM_PEAK_UP_POWER = 0.5;
+      public static final double ARM_PEAK_DOWN_POWER = -0.35;
 
       // Might not need these, use arbitrary FF term instead
       public static final double ARM_KG = 0.59;
@@ -97,10 +108,13 @@ public final class Constants {
 
       public static final double ARM_MAX_PID_ERROR = 1.0;
       public static final double ARM_MAX_PID_POWER = 0.6;
-      public static final double ARM_PID_P = 0.0;
+
+      public static final double ARM_PID_P = 1.5;
       public static final double ARM_PID_I = 0.0;
-      public static final double ARM_PID_D = 0.0;
+      public static final double ARM_PID_D = 0.5; // was 4.0 
       public static final double ARM_PID_F = 0.0;
+      
+      public static final double ARM_ARBITRARY_FF_MAX = 0.1;
 
    }
 

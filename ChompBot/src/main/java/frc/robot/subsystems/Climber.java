@@ -77,7 +77,7 @@ public class Climber extends SubsystemBase {
       double lSpeed = 0.0;
       double rSpeed = 0.0;
       // Move climber UP
-      if (speed > 0.0)
+      if (speed < 0.0)
       {
          if (r) 
          {
@@ -99,7 +99,7 @@ public class Climber extends SubsystemBase {
          }
       }
       // Move climber DOWN
-      else if (speed < 0.0) {
+      else if (speed > 0.0) {
          if (r) {
             if (isClimberDown(r))
                rSpeed = 0.0;

@@ -33,9 +33,12 @@ import frc.robot.Constants;
 import frc.robot.Constants.Drivebase;
 import frc.robot.Constants.OperatorConstants;
 
+
 public class SwerveSubsystem extends SubsystemBase {
    private final SwerveDrive swerveDrive;
    private static int useSquaredInputs;
+
+   public List<PathPlannerTrajectory> pathList;
    //for pathfinder auto, might not need this
    //private SwerveAutoBuilder autoBuilder = null;
 

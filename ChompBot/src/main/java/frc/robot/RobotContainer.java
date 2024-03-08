@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.intake.intakeBackupNote;
 import frc.robot.commands.intake.intakeOneNote;
@@ -33,6 +35,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.io.File;
 import java.util.function.BooleanSupplier;
 
@@ -72,6 +76,7 @@ public class RobotContainer {
       // 185.0 front left
       // angle gear ratio default 12.8
       //
+      SmartDashboard.putData(m_shooter);
       AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
             // Applies deadbands and inverts controls because joysticks
             // are back-right positive while robot
@@ -158,18 +163,32 @@ public class RobotContainer {
 
       operatorXbox.x().whileTrue(new intakeOneNote(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
       //operatorXbox.a().whileTrue(m_shooter.shootNoteCommandOpenLoop(0.5));
-      operatorXbox.b().whileTrue(m_shooter.shooteNotePIDTest(3000.0));
+      //operatorXbox.b().whileTrue(m_shooter.shooteNotePIDTest(3000.0));
       //driverXbox.y().whileTrue(m_shooter.shooteNotePIDTest(5000.0));
-      operatorXbox.y().whileTrue(new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
+
+      operatorXbox.b().whileTrue(new SequentialCommandGroup(
+                  m_shooter.setArmPositionCmd(ArmConstants.ARM_CLOSE_SHOT_SETPOINT)
+                  ,new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean())));
+
+      operatorXbox.y().whileTrue(new SequentialCommandGroup(
+                  m_shooter.setArmPositionCmd(ArmConstants.ARM_LONG_SHOT_SETPOINT)
+                  ,new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean())));
+      
+                  //operatorXbox.y().whileTrue(new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
       operatorXbox.a().whileTrue(new shootNote(m_shooter, 2000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
       //driverXbox.rightTrigger(0.05).whileTrue(m_shooter.shootNoteCommandOpenLoop2(() -> driverXbox.getRightTriggerAxis()));
       // DONT THINK WE NEED THIS driverXbox.rightTrigger(0.05).whileFalse(m_shooter.intakeIdleCommand());
       
+      
+      
+      operatorXbox.povUp().whileTrue(m_shooter.setArmPositionCmd(3000));
+      operatorXbox.povDown().whileTrue(m_shooter.setArmPositionCmd(2380));
+      operatorXbox.povRight().whileTrue(m_shooter.setArmPositionCmd(3300));
       operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -operatorXbox.getLeftTriggerAxis()));
       operatorXbox.axisGreaterThan(
                                     XboxController.Axis.kLeftY.value, 0.1).or(
                                     operatorXbox.axisLessThan(XboxController.Axis.kLeftY.value, -0.1)).whileTrue(
-                                       m_shooter.armByXboxCommand(()->operatorXbox.getLeftY()));
+                                       m_shooter.armByXboxCommand(() -> -operatorXbox.getLeftY()));
 
       //operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> operatorXbox.getLeftTriggerAxis()));
       //operatorXbox.rightTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> -operatorXbox.getRightTriggerAxis()));
@@ -194,6 +213,11 @@ public class RobotContainer {
    public Command getAutonomousCommand() {
       // An example command will be run in autonomous
       return Autos.exampleAuto(drivebase);
+   }
+
+   public void setArmToHere()
+   {
+      m_shooter.setArmAtCurrentPosition();
    }
 
    public void setMotorBrake(boolean brake) {
