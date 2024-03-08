@@ -124,7 +124,7 @@ public class Shooter extends SubsystemBase {
       setArmPosition(m_armMotor.getSelectedSensorPosition());
    }
 
-   private void setArmPosition(double position)
+   public void setArmPosition(double position)
    {
       m_armSetpoint = position;
       double currentPos = m_armMotor.getSelectedSensorPosition();
@@ -397,6 +397,7 @@ public class Shooter extends SubsystemBase {
          m_isShooterAtSetpoint = false;
 
       SmartDashboard.putNumber("ArmAbsEnc", m_armMotor.getSelectedSensorPosition());
+      SmartDashboard.putBoolean("shooterReady?", m_isShooterAtSetpoint);
       // This method will be called once per scheduler run
    }
 

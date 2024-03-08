@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.util.PIDConstants;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -20,16 +22,19 @@ import swervelib.parser.PIDFConfig;
 public final class Constants {
    // pid drive p was .0020645
    // Max velocity in json waas 14.5
-   public static final double ROBOT_MASS = (40.0) * 0.453592; // 32lbs * kg per pound
+   public static final double ROBOT_MASS = (125.0) * 0.453592; // 32lbs * kg per pound
    public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
    public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
 
 
    public static final class Auton {
 
-      public static final PIDFConfig xAutoPID = new PIDFConfig(0.7, 0, 0);
-      public static final PIDFConfig yAutoPID = new PIDFConfig(0.7, 0, 0);
-      public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0, 0.01);
+      //public static final PIDFConfig xAutoPID = new PIDFConfig(0.7, 0, 0);
+      //public static final PIDFConfig yAutoPID = new PIDFConfig(0.7, 0, 0);
+      //public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0, 0.01);
+      
+      public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
+      public static final PIDConstants ANGLE_PID   = new PIDConstants(0.4, 0, 0.01);
 
       public static final double MAX_SPEED = 4;
       public static final double MAX_ACCELERATION = 2;
@@ -84,7 +89,7 @@ public final class Constants {
   
       public static final double SHOOTER_MAX_NATIVE_VELOCITY = 21650.0;
       public static final double SHOOTER_VELOCITY_PER_RPM = 3.3934; // asuming 21650/6380
-      public static final double SHOOTER_VELOCITY_RANGE = 2000.0;
+      public static final double SHOOTER_VELOCITY_RANGE = 500.0;
 
       public static final double ARM_SOFT_LIMIT_LOWER = 2400;
       public static final double ARM_SOFT_LIMIT_UPPER = 3870;

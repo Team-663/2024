@@ -4,12 +4,16 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -26,6 +30,7 @@ import frc.robot.commands.swervedrive.auto.Autos;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.climber.climbByXbox;
+import frc.robot.commands.shooter.setArmPositionCmd;
 //import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 //import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.Shooter;
@@ -36,10 +41,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import java.io.File;
 import java.util.function.BooleanSupplier;
-
+import edu.wpi.first.cameraserver.CameraServer;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -66,13 +71,19 @@ public class RobotContainer {
    CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
    //XboxController operatorXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
    //CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
-
+   private final SendableChooser<Command> autoChooser;
    /**
     * The container for the robot. Contains subsystems, OI devices, and commands.
     */
    public RobotContainer() {
       // Configure the trigger bindings
-      configureBindings();
+      NamedCommands.registerCommand("ArmLow", m_shooter.setArmPositionCmd(ArmConstants.ARM_CLOSE_SHOT_SETPOINT));
+      NamedCommands.registerCommand("ShootNote", new shootNote(m_shooter, 5000.0, () -> {return true;}));
+      NamedCommands.registerCommand("intakeNote", new intakeOneNote(m_shooter));
+      autoChooser = AutoBuilder.buildAutoChooser();
+      SmartDashboard.putData("Auto Mode", autoChooser);
+
+      
       // 185.0 front left
       // angle gear ratio default 12.8
       //
@@ -103,7 +114,7 @@ public class RobotContainer {
 
       m_shooter.setDefaultCommand(m_shooter.intakeIdleCommand());
       m_climber.setDefaultCommand(m_climber.climberIdleCommand());
-
+      configureBindings();
       //m_shooter.setDefaultCommand(m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
       //   m_shooter.shooterByXboxCommand(
       //      () -> operatorXbox.getLeftY(),
@@ -125,7 +136,10 @@ public class RobotContainer {
     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
     * joysticks}.
     */
-   private void configureBindings() {
+   private void configureBindings()
+   {
+      
+      SmartDashboard.putData("Test Auto UpDown", new PathPlannerAuto("FollowOnePath"));
       
       // Driver Xbox controls swerve and Climber
       driverXbox.start().onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -181,7 +195,7 @@ public class RobotContainer {
       
       
       
-      operatorXbox.povUp().whileTrue(m_shooter.setArmPositionCmd(3000));
+      operatorXbox.povUp().whileTrue(m_shooter.setArmPositionCmd(ArmConstants.ARM_CLOSE_SHOT_SETPOINT));
       operatorXbox.povDown().whileTrue(m_shooter.setArmPositionCmd(2380));
       operatorXbox.povRight().whileTrue(m_shooter.setArmPositionCmd(3300));
       operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -operatorXbox.getLeftTriggerAxis()));

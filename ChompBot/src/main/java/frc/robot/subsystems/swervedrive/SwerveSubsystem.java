@@ -9,12 +9,19 @@ package frc.robot.subsystems.swervedrive;
 //import com.pathplanner.lib.PathPlannerTrajectory;
 //import com.pathplanner.lib.auto.PIDConstants;
 //import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,8 +45,9 @@ public class SwerveSubsystem extends SubsystemBase {
    private final SwerveDrive swerveDrive;
    private static int useSquaredInputs;
 
-   public List<PathPlannerTrajectory> pathList;
+
    //for pathfinder auto, might not need this
+   //private SwerveAutoBuilder autoBuilder = null;
    //private SwerveAutoBuilder autoBuilder = null;
 
    /** Creates a new SwerveSubsystem. */
@@ -57,6 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
       {
          throw new RuntimeException(e);
       }
+      setupPathPlanner();
    }
 
    public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
@@ -281,5 +290,40 @@ public class SwerveSubsystem extends SubsystemBase {
     */
    public void addFakeVisionReading() {
       //swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), true, 4);
+   }
+
+   public void setupPathPlanner()
+   {
+      AutoBuilder.configureHolonomic(
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants
+                                             // class
+                  Constants.Auton.TRANSLATION_PID,
+                  // Translation PID constants
+                  Constants.Auton.ANGLE_PID,
+                  // Rotation PID constants
+                  4.5,
+                  // Max module speed, in m/s
+                  swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
+                  // Drive base radius in meters. Distance from robot center to furthest module.
+                  new ReplanningConfig()
+            // Default path replanning config. See the API for the options here
+            ),
+            () -> {
+               // Boolean supplier that controls when the path will be mirrored for the red
+               // alliance
+               // This will flip the path being followed to the red side of the field.
+               // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+               
+               // Disable for testing, forcing to BLUE side
+               //var alliance = DriverStation.getAlliance();
+               //return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
+               return false;
+            },
+            this // Reference to this subsystem to set requirements
+      );
    }
 }

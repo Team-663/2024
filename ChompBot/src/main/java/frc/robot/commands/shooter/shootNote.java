@@ -16,12 +16,14 @@ public class shootNote extends Command {
    Shooter m_shooter;
    BooleanSupplier m_shoot;
    double m_speed;
+   boolean m_hasShot;
    /** Creates a new shootNote. */
    public shootNote(Shooter shooter, double speed, BooleanSupplier shoot)
    {
       m_shooter = shooter;
       m_shoot = shoot;
       m_speed = speed;
+      m_hasShot = false;
       addRequirements(m_shooter);
       // Use addRequirements() here to declare subsystem dependencies.
    }
@@ -38,8 +40,9 @@ public class shootNote extends Command {
    public void execute() {
       double intakeSpeed = 0.0;
 
-      if (m_shoot.getAsBoolean())
+      if (m_shoot.getAsBoolean() && m_shooter.IsShooterUpToSpeed())
       {
+         m_hasShot = true;
          intakeSpeed = Constants.ArmConstants.INTAKE_MOTOR_SHOOT_SPEED;
          SmartDashboard.putBoolean("ShootNow", true);
       }
@@ -62,6 +65,7 @@ public class shootNote extends Command {
    // Returns true when the command should end.
    @Override
    public boolean isFinished() {
-      return false;
+      // TODO: do we need a timer here?
+      return m_hasShot;
    }
 }

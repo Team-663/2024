@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4357068913852507,
-      "y": 6.991369417831561
+      "x": 2.239175719435603,
+      "y": 5.211322262872771
     },
     "rotation": 0
   },
@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Station1ToNote1"
+                  "pathName": "toSideNote"
                 }
               },
               {

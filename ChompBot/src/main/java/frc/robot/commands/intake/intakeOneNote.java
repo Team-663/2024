@@ -4,8 +4,12 @@
 
 package frc.robot.commands.intake;
 
+import java.lang.constant.Constable;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
+import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 
 public class intakeOneNote extends Command {
   /** Creates a new intakeOneNote. */
@@ -18,7 +22,10 @@ public class intakeOneNote extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() 
+  {
+    m_shooter.setArmPosition(ArmConstants.ARM_DOWN_ENCODER_VALUE);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
