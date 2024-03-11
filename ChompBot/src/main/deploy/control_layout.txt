@@ -1,3 +1,5 @@
+https://yagsl.gitbook.io/yagsl/configuring-yagsl/the-eight-steps
+
 Control Layout plan:
 
 Driver Xbox:
