@@ -29,8 +29,16 @@ public class intakeOneNote extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    m_shooter.intakeNote();
+  public void execute() 
+  {
+    if (m_shooter.IsShooterSpinningTooFastForIntake())
+    {
+      m_shooter.intakeNote(ArmConstants.INTAKE_MOTOR_SPEED_SLOWER);
+    }
+    else
+    {
+      m_shooter.intakeNote();
+    }
   }
 
   // Called once the command ends or is interrupted.

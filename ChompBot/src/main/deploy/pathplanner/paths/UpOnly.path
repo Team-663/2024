@@ -11,7 +11,7 @@
         "x": 2.6374025947343434,
         "y": 7.0
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     },
     {
@@ -24,7 +24,7 @@
         "y": 7.0
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
@@ -44,9 +44,6 @@
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
-  },
+  "previewStartingState": null,
   "useDefaultConstraints": true
 }

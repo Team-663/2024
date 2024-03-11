@@ -66,6 +66,7 @@ public final class Constants {
       public static final int CANID_ARM_VICTOR_2 = 18;
 
       public static final double INTAKE_MOTOR_SPEED = 0.8; // was 0.75 with the 775Pro
+      public static final double INTAKE_MOTOR_SPEED_SLOWER = 0.5;
       public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
       public static final double INTAKE_BACK_SLOW_SPEED = -0.35;
 
@@ -90,16 +91,19 @@ public final class Constants {
       public static final double SHOOTER_MAX_NATIVE_VELOCITY = 21650.0;
       public static final double SHOOTER_VELOCITY_PER_RPM = 3.3934; // asuming 21650/6380
       public static final double SHOOTER_VELOCITY_RANGE = 500.0;
+      public static final double SHOOTER_TOO_FAST_FOR_INTAKE_SPEED = 1000.0;
+      
 
-      public static final double ARM_SOFT_LIMIT_LOWER = 2400;
-      public static final double ARM_SOFT_LIMIT_UPPER = 3870;
+      public static final double ARM_SOFT_LIMIT_LOWER = 2700;
+      public static final double ARM_SOFT_LIMIT_UPPER = 3300;  // old was 3870 before moving up
 
       public static final double ARM_SOFT_LIMIT_TEST_CLOSE_LOWER = 2700;
-      public static final double ARM_SOFT_LIMIT_TEST_CLOSE_UPPER = 3500;
+      public static final double ARM_SOFT_LIMIT_TEST_CLOSE_UPPER = 3300;
 
       public static final double ARM_DOWN_ENCODER_VALUE = 2380;
       public static final double ARM_CLOSE_SHOT_SETPOINT = 2920; // was 2837
-      public static final double ARM_LONG_SHOT_SETPOINT = 3050;
+      public static final double ARM_LONG_SHOT_SETPOINT = 3125;
+      public static final double ARM_AMP_SHOT_SETPOINT = 3050;
       //2815-2860 close shot
       // 3010 - 3050 long shot
 

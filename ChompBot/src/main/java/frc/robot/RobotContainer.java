@@ -26,6 +26,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.intake.intakeBackupNote;
 import frc.robot.commands.intake.intakeOneNote;
 import frc.robot.commands.shooter.shootNote;
+import frc.robot.commands.shooter.shootNoteXboxCmd;
 import frc.robot.commands.swervedrive.auto.Autos;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
@@ -61,17 +62,10 @@ public class RobotContainer {
 
    private final Shooter m_shooter = new Shooter();
    private final Climber m_climber = new Climber();
-   // CommandJoystick rotationController = new CommandJoystick(1);
-   // Replace with CommandPS4Controller or CommandJoystick if needed
-   //CommandJoystick driverController = new CommandJoystick(1);
 
-   // CommandJoystick driverController = new
-   // CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
    CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_DRIVER);
    CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
-   //XboxController operatorXbox = new XboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
-   //CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.USB_PORT_XBOX_OPERATOR);
-   private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoChooser;
    /**
     * The container for the robot. Contains subsystems, OI devices, and commands.
     */
@@ -115,11 +109,6 @@ public class RobotContainer {
       m_shooter.setDefaultCommand(m_shooter.intakeIdleCommand());
       m_climber.setDefaultCommand(m_climber.climberIdleCommand());
       configureBindings();
-      //m_shooter.setDefaultCommand(m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
-      //   m_shooter.shooterByXboxCommand(
-      //      () -> operatorXbox.getLeftY(),
-      //      () -> -getOperatorTriggerCombined()
-      //      ));
    }
 
    /**
@@ -139,14 +128,16 @@ public class RobotContainer {
    private void configureBindings()
    {
       
-      SmartDashboard.putData("Test Auto UpDown", new PathPlannerAuto("FollowOnePath"));
+      SmartDashboard.putData("Auto Score", new PathPlannerAuto("FollowOnePath"));
+      SmartDashboard.putData("Test Auto", new PathPlannerAuto("FollowOnePath2"));
+
+      SmartDashboard.putData("Auto Note Close", new PathPlannerAuto("Blue1ScoreClose"));
+      SmartDashboard.putData("Auto Note Mid", new PathPlannerAuto("Blue1ScoreMid"));
+      SmartDashboard.putData("Auto Note Mid-Mid", new PathPlannerAuto("MidToMidScore"));
       
       // Driver Xbox controls swerve and Climber
       driverXbox.start().onTrue(new InstantCommand(drivebase::zeroGyro));
-      //driverXbox.leftTrigger(0.05).whileTrue(m_climber.moveClimberUpCommand(() -> operatorXbox.getLeftTriggerAxis(), false));
-      //driverXbox.rightTrigger(0.05).whileTrue(m_climber.moveClimberUpCommand(() -> operatorXbox.getLeftTriggerAxis(), true));
-      
-      //driverXbox.a().whileTrue(m_climber.climberUnlockCommand());
+
       driverXbox.a().whileTrue(new climbByXbox(m_climber
                                                             , () -> driverXbox.a().getAsBoolean()
                                                             , () -> driverXbox.getLeftTriggerAxis()
@@ -163,60 +154,38 @@ public class RobotContainer {
                                                             , () -> false
                                                             ));
       
-      /*
-      driverXbox.leftTrigger(0.05).or(driverXbox.rightTrigger(0.05)).whileTrue(new climbByXbox(m_climber
-                                                            , () -> true
-                                                            , () -> driverXbox.getLeftTriggerAxis()
-                                                            , () -> driverXbox.getRightTriggerAxis()
-                                                            , () -> false
-                                                            , () -> false
-                                                            ));
-       */
-      // Operator intakes and shoots
-      //operatorXbox.axisGreaterThan(XboxController.Axis.kLeftY, 0.0);
+
 
       operatorXbox.x().whileTrue(new intakeOneNote(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
-      //operatorXbox.a().whileTrue(m_shooter.shootNoteCommandOpenLoop(0.5));
-      //operatorXbox.b().whileTrue(m_shooter.shooteNotePIDTest(3000.0));
-      //driverXbox.y().whileTrue(m_shooter.shooteNotePIDTest(5000.0));
 
+      
       operatorXbox.b().whileTrue(new SequentialCommandGroup(
                   m_shooter.setArmPositionCmd(ArmConstants.ARM_CLOSE_SHOT_SETPOINT)
-                  ,new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean())));
+                  ,new shootNoteXboxCmd(m_shooter, 5000.0, () -> {
+                                                                        return (operatorXbox.getRightTriggerAxis() > 0.0 ? true : false);
+                                                                        })));
 
       operatorXbox.y().whileTrue(new SequentialCommandGroup(
                   m_shooter.setArmPositionCmd(ArmConstants.ARM_LONG_SHOT_SETPOINT)
-                  ,new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean())));
+                  ,new shootNoteXboxCmd(m_shooter, 5000.0, () -> {
+                                                                        return (operatorXbox.getRightTriggerAxis() > 0.0 ? true : false);
+                                                                        })));
+
+      operatorXbox.a().whileTrue(new SequentialCommandGroup(
+         m_shooter.setArmPositionCmd(ArmConstants.ARM_AMP_SHOT_SETPOINT)
+         ,m_shooter.intakeManualSpeed(() -> -operatorXbox.getLeftTriggerAxis(), () -> {return 0.0;})
+      ));
+
       
-                  //operatorXbox.y().whileTrue(new shootNote(m_shooter, 5000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
-      operatorXbox.a().whileTrue(new shootNote(m_shooter, 2000.0, () -> operatorXbox.rightBumper().getAsBoolean()));
-      //driverXbox.rightTrigger(0.05).whileTrue(m_shooter.shootNoteCommandOpenLoop2(() -> driverXbox.getRightTriggerAxis()));
-      // DONT THINK WE NEED THIS driverXbox.rightTrigger(0.05).whileFalse(m_shooter.intakeIdleCommand());
       
-      
-      
-      operatorXbox.povUp().whileTrue(m_shooter.setArmPositionCmd(ArmConstants.ARM_CLOSE_SHOT_SETPOINT));
       operatorXbox.povDown().whileTrue(m_shooter.setArmPositionCmd(2380));
-      operatorXbox.povRight().whileTrue(m_shooter.setArmPositionCmd(3300));
-      operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -operatorXbox.getLeftTriggerAxis()));
+      operatorXbox.povUp().whileTrue(m_shooter.setArmPositionCmd(3300));
+      operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.intakeManualSpeed(() -> -operatorXbox.getLeftTriggerAxis(), () -> -operatorXbox.getLeftTriggerAxis()));
       operatorXbox.axisGreaterThan(
                                     XboxController.Axis.kLeftY.value, 0.1).or(
                                     operatorXbox.axisLessThan(XboxController.Axis.kLeftY.value, -0.1)).whileTrue(
                                        m_shooter.armByXboxCommand(() -> -operatorXbox.getLeftY()));
 
-      //operatorXbox.leftTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> operatorXbox.getLeftTriggerAxis()));
-      //operatorXbox.rightTrigger(0.05).whileTrue(m_shooter.armByXboxCommand(() -> -operatorXbox.getRightTriggerAxis()));
-      //operatorXbox.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.15).onTrue(
-      //   m_shooter.armByXboxCommand(operatorXbox.getLeftY()));
-
-      //new JoystickButton(operatorXbox, 1).onTrue(new StartEndCommand(m_shooter::intakeNoteCommand, null,m_shooter));
-      /* try using CommandJoystick...
-      new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-      new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
-      
-      new JoystickButton(driverXbox, XboxController.Button.kX.value).onTrue(m_shooter.intakeNoteCommand());
-      new JoystickButton(driverXbox, XboxController.Button.kA.value).onTrue(m_shooter.shootNoteCommand(0.75));
-      */
    }
 
    /**

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4474177279310322,
-      "y": 7.120188619835157
+      "x": 1.26,
+      "y": 5.574358195791997
     },
     "rotation": 180.0
   },
@@ -15,18 +15,6 @@
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.0
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Station1ToEdge"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -55,7 +43,38 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "toSideNote"
+                  "pathName": "midNoteBackup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "midNoteForward"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmLow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "midScoreToMidfield"
                 }
               }
             ]

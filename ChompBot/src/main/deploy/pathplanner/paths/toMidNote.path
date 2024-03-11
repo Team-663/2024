@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5248146901429311,
-        "y": 7.0850561101978125
+        "x": 2.051802334703099,
+        "y": 6.159900023081073
       },
       "isLocked": false,
       "linkedName": "Station1ShotPoint"
     },
     {
       "anchor": {
-        "x": 2.719320017812645,
-        "y": 6.979658581285779
+        "x": 2.672476671629519,
+        "y": 5.550936522700434
       },
       "prevControl": {
-        "x": 2.447689189996871,
-        "y": 6.708027753470006
+        "x": 1.7824530941501242,
+        "y": 5.539225686154654
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 170.0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 141.0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

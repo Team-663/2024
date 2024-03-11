@@ -98,6 +98,11 @@ public class Shooter extends SubsystemBase {
       return m_isShooterAtSetpoint;
    }
 
+   public boolean IsShooterSpinningTooFastForIntake()
+   {
+      return (Math.abs(m_shooterEnc.getVelocity()) > ArmConstants.SHOOTER_TOO_FAST_FOR_INTAKE_SPEED ? true : false);
+   }
+
    private void armByXbox(double armValue)
    {
       double armOutput = 0.0;
@@ -154,10 +159,19 @@ public class Shooter extends SubsystemBase {
          intakeMotorSet(Constants.ArmConstants.INTAKE_MOTOR_SPEED);
       else
          intakeIdle();
-
-      
-
    }
+
+   public void intakeNote(double speed)
+   {
+      // run intake motors at intake speed
+      // if beam is broken, stop
+      if (!CheckIfNoteInIntake())
+         intakeMotorSet(speed);
+      else
+         intakeIdle();
+   }
+
+
    private void intakeIdle()
    {
       m_intakeMotor.stopMotor();
@@ -191,6 +205,13 @@ public class Shooter extends SubsystemBase {
    public void intakeMotorSet(double val)
    {
       m_intakeMotor.set(val);
+
+   }
+
+   public void intakeMotorAndShooterSet(double intakeSpeed, double shooterSpeed)
+   {
+      m_intakeMotor.set(intakeSpeed);
+      m_shooterMotorLeader.set(shooterSpeed);
    }
 
    public void shooterEnablePID(double setpoint)
@@ -272,9 +293,9 @@ public class Shooter extends SubsystemBase {
       ).withName("shootOpenLoop2");
    }
 
-   public Command intakeManualSpeed(DoubleSupplier speed)
+   public Command intakeManualSpeed(DoubleSupplier speed, DoubleSupplier shooterSpeed)
    {
-      return run(() -> intakeMotorSet(speed.getAsDouble())).withName("intakeManualSpd");
+      return run(() -> intakeMotorAndShooterSet(speed.getAsDouble(), shooterSpeed.getAsDouble())).withName("intakeManualSpd");
    }
 
    public Command intakeIdleCommand()
@@ -363,10 +384,10 @@ public class Shooter extends SubsystemBase {
       m_armMotor.setSensorPhase(true);
       m_armSetpoint = m_armMotor.getSelectedSensorPosition();
       m_armMotor.configForwardSoftLimitEnable(true);
-      m_armMotor.configForwardSoftLimitThreshold(ArmConstants.ARM_SOFT_LIMIT_TEST_CLOSE_UPPER);
+      m_armMotor.configForwardSoftLimitThreshold(ArmConstants.ARM_SOFT_LIMIT_UPPER);
 
       m_armMotor.configReverseSoftLimitEnable(true);
-      m_armMotor.configReverseSoftLimitThreshold(ArmConstants.ARM_SOFT_LIMIT_TEST_CLOSE_LOWER);
+      m_armMotor.configReverseSoftLimitThreshold(ArmConstants.ARM_SOFT_LIMIT_LOWER);
 
       //m_armMotor.configPeakOutputForward(ArmConstants.ARM_PEAK_UP_POWER);
       m_armMotor.configPeakOutputReverse(ArmConstants.ARM_PEAK_DOWN_POWER);
