@@ -98,10 +98,10 @@ public class RobotContainer {
 
             TeleopDrive closedFieldRel = new TeleopDrive(
                drivebase,
-               () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-               () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+               () -> MathUtil.applyDeadband(-driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+               () -> MathUtil.applyDeadband(-driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
                //() -> -driverXbox.getRawAxis(2)+driverXbox.getRawAxis(3),
-               () -> MathUtil.applyDeadband(driverXbox.getRightX(), OperatorConstants.LEFT_X_DEADBAND),
+               () -> MathUtil.applyDeadband(-driverXbox.getRightX(), OperatorConstants.LEFT_X_DEADBAND),
                () -> true, false, false);
        
       drivebase.setDefaultCommand(closedFieldRel);
@@ -131,7 +131,7 @@ public class RobotContainer {
       SmartDashboard.putData("Auto Score", new PathPlannerAuto("FollowOnePath"));
       SmartDashboard.putData("Test Auto", new PathPlannerAuto("FollowOnePath2"));
 
-      SmartDashboard.putData("Auto Note Close", new PathPlannerAuto("Blue1ScoreClose"));
+      SmartDashboard.putData("Auto Note CloseTEST", new PathPlannerAuto("Blue1ScoreCloseTEST"));
       SmartDashboard.putData("Auto Note Mid", new PathPlannerAuto("Blue1ScoreMid"));
       SmartDashboard.putData("Auto Note Mid-Mid", new PathPlannerAuto("MidToMidScore"));
       

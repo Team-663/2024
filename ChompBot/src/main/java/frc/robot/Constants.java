@@ -91,7 +91,7 @@ public final class Constants {
       public static final double SHOOTER_MAX_NATIVE_VELOCITY = 21650.0;
       public static final double SHOOTER_VELOCITY_PER_RPM = 3.3934; // asuming 21650/6380
       public static final double SHOOTER_VELOCITY_RANGE = 500.0;
-      public static final double SHOOTER_TOO_FAST_FOR_INTAKE_SPEED = 1000.0;
+      public static final double SHOOTER_TOO_FAST_FOR_INTAKE_SPEED = 2000.0;
       
 
       public static final double ARM_SOFT_LIMIT_LOWER = 2700;
