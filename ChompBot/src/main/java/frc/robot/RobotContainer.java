@@ -81,6 +81,10 @@ public class RobotContainer {
       autoChooser.addOption("singleSide3Note", new PathPlannerAuto("singleSide3Note"));
       autoChooser.addOption("doubleSide2Note", new PathPlannerAuto("doubleSide2Note"));
       autoChooser.addOption("doubleSide3Note", new PathPlannerAuto("doubleSide3Note"));
+
+      autoChooser.addOption("mid2Note", new PathPlannerAuto("mid2Note"));
+      autoChooser.addOption("mid3NoteSingleSide", new PathPlannerAuto("mid3NoteSingleSide"));
+      autoChooser.addOption("mid3NoteDoubleSide", new PathPlannerAuto("mid3NoteDoubleSide"));
       
 
       
@@ -207,14 +211,5 @@ public class RobotContainer {
 
    public void setMotorBrake(boolean brake) {
       drivebase.setMotorBrake(brake);
-   }
-   private double getOperatorTriggerCombined()
-   {
-      return 0.0;
-      //return operatorXbox.getLeftTriggerAxis() + operatorXbox.getRightTriggerAxis();
-   }
-   private double getDriverTriggerCombined()
-   {
-      return driverXbox.getLeftTriggerAxis() + driverXbox.getRightTriggerAxis();
    }
 }
