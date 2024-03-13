@@ -131,8 +131,14 @@ public class Shooter extends SubsystemBase {
 
    public void setArmPosition(double position)
    {
+      
+
+
       m_armSetpoint = position;
       double currentPos = m_armMotor.getSelectedSensorPosition();
+      if ((position < currentPos) && (position == ArmConstants.ARM_CLOSE_SHOT_SETPOINT))
+         position += 20;
+
       double degrees = (currentPos - ArmConstants.ARM_DOWN_ENCODER_VALUE-50) / (4096 / 360.0);
       double radians = java.lang.Math.toRadians(degrees);
       double cosineScalar = java.lang.Math.cos(radians);

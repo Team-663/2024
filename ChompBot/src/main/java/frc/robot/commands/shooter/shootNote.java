@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Constants.Auton;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -76,6 +77,7 @@ public class shootNote extends Command {
    @Override
    public boolean isFinished() {
       // TODO: do we need a timer here?
-      return (m_hasShot && time.hasElapsed(2.0));
+      //return (m_hasShot && time.hasElapsed(Auton.AUTO_SHOOT_DURATION));
+      return (!m_shooter.CheckIfNoteInIntake());
    }
 }

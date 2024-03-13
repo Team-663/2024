@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4474177279310322,
-      "y": 7.120188619835157
+      "x": 0.4591285644768136,
+      "y": 4.087081954477746
     },
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -16,15 +16,9 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.0
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "Station1ToEdge"
+                  "pathName": "doubleSideToEdge"
                 }
               },
               {
@@ -55,15 +49,46 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "toMidNote"
+                  "pathName": "doubleEdgeToNote"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "backToDoubleSideGoal"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmLow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toDoubleSideLine"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "doubleSide",
   "choreoAuto": false
 }

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.intake.intakeBackupNote;
+import frc.robot.commands.intake.intakeNoteXboxCmd;
 import frc.robot.commands.intake.intakeOneNote;
 import frc.robot.commands.shooter.shootNote;
 import frc.robot.commands.shooter.shootNoteXboxCmd;
@@ -76,6 +77,10 @@ public class RobotContainer {
       NamedCommands.registerCommand("intakeNote", new intakeOneNote(m_shooter));
       autoChooser = AutoBuilder.buildAutoChooser();
       SmartDashboard.putData("Auto Mode", autoChooser);
+      autoChooser.addOption("singleSide2Note", new PathPlannerAuto("singleSide2Note"));
+      autoChooser.addOption("doubleSide2Note", new PathPlannerAuto("doubleSide2Note"));
+      autoChooser.addOption("singleSide3Note", new PathPlannerAuto("singleSide3Note"));
+      
 
       
       // 185.0 front left
@@ -156,7 +161,7 @@ public class RobotContainer {
       
 
 
-      operatorXbox.x().whileTrue(new intakeOneNote(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
+      operatorXbox.x().whileTrue(new intakeNoteXboxCmd(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
 
       
       operatorXbox.b().whileTrue(new SequentialCommandGroup(
@@ -195,7 +200,8 @@ public class RobotContainer {
     */
    public Command getAutonomousCommand() {
       // An example command will be run in autonomous
-      return Autos.exampleAuto(drivebase);
+      return autoChooser.getSelected();
+      //return Autos.exampleAuto(drivebase);
    }
 
    public void setArmToHere()

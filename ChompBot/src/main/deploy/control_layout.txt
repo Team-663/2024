@@ -23,3 +23,14 @@ L trigger: spin up shooter
 
 LeftY: run intake manually
 ???: run shooter backwards
+
+
+Auto Combinations
+
+SingleStation -> 2 Note
+SingleStation -> 3 Note
+Middle-> 2 Note
+Middle-> 3 Note SingleSide
+Middle-> 3 Note DoubleSide
+DoubleStation -> 2 Note
+DoubleStation -> 3 Note

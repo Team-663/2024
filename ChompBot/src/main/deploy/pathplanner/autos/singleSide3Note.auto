@@ -1,0 +1,152 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.4591285644768136,
+      "y": 7.120188619835157
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "singleSideToGoal"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "toSingleSideNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "toGoalMidEdge"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "midNoteBackup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "toGoalMidEdge"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmLow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toSingleSideLine"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "singleSide",
+  "choreoAuto": false
+}

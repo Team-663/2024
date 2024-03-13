@@ -32,6 +32,9 @@ public final class Constants {
       //public static final PIDFConfig xAutoPID = new PIDFConfig(0.7, 0, 0);
       //public static final PIDFConfig yAutoPID = new PIDFConfig(0.7, 0, 0);
       //public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0, 0.01);
+
+      public static final double AUTO_SHOOT_DURATION = 3.0;
+      public static final double AUTO_INTAKE_MAX_DURATION = 5.0;
       
       public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
       public static final PIDConstants ANGLE_PID   = new PIDConstants(0.4, 0, 0.01);
@@ -66,7 +69,7 @@ public final class Constants {
       public static final int CANID_ARM_VICTOR_2 = 18;
 
       public static final double INTAKE_MOTOR_SPEED = 0.8; // was 0.75 with the 775Pro
-      public static final double INTAKE_MOTOR_SPEED_SLOWER = 0.5;
+      public static final double INTAKE_MOTOR_SPEED_SLOWER = 0.7;
       public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
       public static final double INTAKE_BACK_SLOW_SPEED = -0.35;
 
