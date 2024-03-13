@@ -16,15 +16,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "doubleSideToEdge"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "doubleSideToEdge"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -60,15 +67,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "backToDoubleSideGoal"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "backToDoubleSideGoal"
+                      }
+                    }
+                  ]
                 }
               },
               {

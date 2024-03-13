@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 0.4591285644768136,
-      "y": 7.120188619835157
+      "y": 4.087081954477746
     },
     "rotation": 0.0
   },
@@ -16,15 +16,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "Station1ToEdge"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "doubleSideToEdge"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -49,7 +56,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "toSideNote"
+                  "pathName": "doubleEdgeToNote"
                 }
               }
             ]
@@ -60,15 +67,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "toFrontEdge"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "toGoalMidEdge"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -104,15 +118,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "midNoteForward"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ArmLow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "toGoalMidEdge"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -127,12 +148,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "midNoteBackup"
+            "pathName": "toMidLine"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "doubleSide",
   "choreoAuto": false
 }

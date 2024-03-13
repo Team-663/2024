@@ -78,8 +78,9 @@ public class RobotContainer {
       autoChooser = AutoBuilder.buildAutoChooser();
       SmartDashboard.putData("Auto Mode", autoChooser);
       autoChooser.addOption("singleSide2Note", new PathPlannerAuto("singleSide2Note"));
-      autoChooser.addOption("doubleSide2Note", new PathPlannerAuto("doubleSide2Note"));
       autoChooser.addOption("singleSide3Note", new PathPlannerAuto("singleSide3Note"));
+      autoChooser.addOption("doubleSide2Note", new PathPlannerAuto("doubleSide2Note"));
+      autoChooser.addOption("doubleSide3Note", new PathPlannerAuto("doubleSide3Note"));
       
 
       
@@ -133,12 +134,7 @@ public class RobotContainer {
    private void configureBindings()
    {
       
-      SmartDashboard.putData("Auto Score", new PathPlannerAuto("FollowOnePath"));
-      SmartDashboard.putData("Test Auto", new PathPlannerAuto("FollowOnePath2"));
-
-      SmartDashboard.putData("Auto Note CloseTEST", new PathPlannerAuto("Blue1ScoreCloseTEST"));
-      SmartDashboard.putData("Auto Note Mid", new PathPlannerAuto("Blue1ScoreMid"));
-      SmartDashboard.putData("Auto Note Mid-Mid", new PathPlannerAuto("MidToMidScore"));
+      SmartDashboard.putData("Test Auto", new PathPlannerAuto("TestPathAuto"));
       
       // Driver Xbox controls swerve and Climber
       driverXbox.start().onTrue(new InstantCommand(drivebase::zeroGyro));
