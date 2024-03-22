@@ -72,6 +72,7 @@ public final class Constants {
       public static final double INTAKE_MOTOR_SPEED_SLOWER = 0.7;
       public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
       public static final double INTAKE_BACK_SLOW_SPEED = -0.35;
+      public static final double INTAKE_BACKUP_TIME = 0.1;
 
       public static final double LASER_BEAM_BREAK_THRESHOLD = 13.1; // If laser reading is < this value, we have a note inside
    
@@ -107,6 +108,8 @@ public final class Constants {
       public static final double ARM_CLOSE_SHOT_SETPOINT = 2920; // was 2837
       public static final double ARM_LONG_SHOT_SETPOINT = 3125;
       public static final double ARM_AMP_SHOT_SETPOINT = 3050;
+
+      public static final double ARM_CLOSE_SHOT_ANGLE_OFFSET = 55;
       //2815-2860 close shot
       // 3010 - 3050 long shot
 

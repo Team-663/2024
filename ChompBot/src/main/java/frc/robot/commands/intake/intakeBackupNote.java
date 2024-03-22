@@ -5,6 +5,7 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -43,7 +44,7 @@ public class intakeBackupNote extends Command {
    @Override
    public boolean isFinished() 
    {
-      return time.hasElapsed(0.25);
+      return time.hasElapsed(ArmConstants.INTAKE_BACKUP_TIME);
       //return !m_shooter.CheckIfNoteInIntake();
    }
 }

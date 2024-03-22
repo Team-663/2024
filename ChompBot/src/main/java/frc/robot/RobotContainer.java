@@ -77,8 +77,11 @@ public class RobotContainer {
       NamedCommands.registerCommand("intakeNote", new intakeOneNote(m_shooter));
       autoChooser = AutoBuilder.buildAutoChooser();
       SmartDashboard.putData("Auto Mode", autoChooser);
+      autoChooser.addOption("singleSide1Note", new PathPlannerAuto("singleSide1Note"));
       autoChooser.addOption("singleSide2Note", new PathPlannerAuto("singleSide2Note"));
       autoChooser.addOption("singleSide3Note", new PathPlannerAuto("singleSide3Note"));
+      
+      autoChooser.addOption("doubleSide1Note", new PathPlannerAuto("doubleSide1Note"));
       autoChooser.addOption("doubleSide2Note", new PathPlannerAuto("doubleSide2Note"));
       autoChooser.addOption("doubleSide3Note", new PathPlannerAuto("doubleSide3Note"));
 
