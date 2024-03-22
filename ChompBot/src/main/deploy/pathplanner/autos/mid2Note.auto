@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.26,
-      "y": 5.574358195791997
+      "x": 1.2788871226815193,
+      "y": 5.59
     },
-    "rotation": 180.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -35,15 +35,34 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "midNoteBackup"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "intakeNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmLow"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "midNoteBackup"
+                  "pathName": "toGoalMidEdge"
                 }
               }
             ]
@@ -54,18 +73,6 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "midNoteForward"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmLow"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "ShootNote"
@@ -74,7 +81,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "midScoreToMidfield"
+                  "pathName": "toMidLine"
                 }
               }
             ]
@@ -83,6 +90,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "mid",
   "choreoAuto": false
 }

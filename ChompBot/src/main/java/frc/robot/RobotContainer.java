@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.intake.intakeBackupNote;
+import frc.robot.commands.intake.intakeNoteXboxCmd;
 import frc.robot.commands.intake.intakeOneNote;
 import frc.robot.commands.shooter.shootNote;
 import frc.robot.commands.shooter.shootNoteXboxCmd;
@@ -76,6 +77,18 @@ public class RobotContainer {
       NamedCommands.registerCommand("intakeNote", new intakeOneNote(m_shooter));
       autoChooser = AutoBuilder.buildAutoChooser();
       SmartDashboard.putData("Auto Mode", autoChooser);
+      autoChooser.addOption("singleSide1Note", new PathPlannerAuto("singleSide1Note"));
+      autoChooser.addOption("singleSide2Note", new PathPlannerAuto("singleSide2Note"));
+      autoChooser.addOption("singleSide3Note", new PathPlannerAuto("singleSide3Note"));
+      
+      autoChooser.addOption("doubleSide1Note", new PathPlannerAuto("doubleSide1Note"));
+      autoChooser.addOption("doubleSide2Note", new PathPlannerAuto("doubleSide2Note"));
+      autoChooser.addOption("doubleSide3Note", new PathPlannerAuto("doubleSide3Note"));
+
+      autoChooser.addOption("mid2Note", new PathPlannerAuto("mid2Note"));
+      autoChooser.addOption("mid3NoteSingleSide", new PathPlannerAuto("mid3NoteSingleSide"));
+      autoChooser.addOption("mid3NoteDoubleSide", new PathPlannerAuto("mid3NoteDoubleSide"));
+      
 
       
       // 185.0 front left
@@ -98,10 +111,10 @@ public class RobotContainer {
 
             TeleopDrive closedFieldRel = new TeleopDrive(
                drivebase,
-               () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-               () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+               () -> MathUtil.applyDeadband(-driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+               () -> MathUtil.applyDeadband(-driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
                //() -> -driverXbox.getRawAxis(2)+driverXbox.getRawAxis(3),
-               () -> MathUtil.applyDeadband(driverXbox.getRightX(), OperatorConstants.LEFT_X_DEADBAND),
+               () -> MathUtil.applyDeadband(-driverXbox.getRightX(), OperatorConstants.LEFT_X_DEADBAND),
                () -> true, false, false);
        
       drivebase.setDefaultCommand(closedFieldRel);
@@ -128,12 +141,7 @@ public class RobotContainer {
    private void configureBindings()
    {
       
-      SmartDashboard.putData("Auto Score", new PathPlannerAuto("FollowOnePath"));
-      SmartDashboard.putData("Test Auto", new PathPlannerAuto("FollowOnePath2"));
-
-      SmartDashboard.putData("Auto Note Close", new PathPlannerAuto("Blue1ScoreClose"));
-      SmartDashboard.putData("Auto Note Mid", new PathPlannerAuto("Blue1ScoreMid"));
-      SmartDashboard.putData("Auto Note Mid-Mid", new PathPlannerAuto("MidToMidScore"));
+      SmartDashboard.putData("Test Auto", new PathPlannerAuto("TestPathAuto"));
       
       // Driver Xbox controls swerve and Climber
       driverXbox.start().onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -156,7 +164,7 @@ public class RobotContainer {
       
 
 
-      operatorXbox.x().whileTrue(new intakeOneNote(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
+      operatorXbox.x().whileTrue(new intakeNoteXboxCmd(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
 
       
       operatorXbox.b().whileTrue(new SequentialCommandGroup(
@@ -195,7 +203,8 @@ public class RobotContainer {
     */
    public Command getAutonomousCommand() {
       // An example command will be run in autonomous
-      return Autos.exampleAuto(drivebase);
+      return autoChooser.getSelected();
+      //return Autos.exampleAuto(drivebase);
    }
 
    public void setArmToHere()
@@ -205,14 +214,5 @@ public class RobotContainer {
 
    public void setMotorBrake(boolean brake) {
       drivebase.setMotorBrake(brake);
-   }
-   private double getOperatorTriggerCombined()
-   {
-      return 0.0;
-      //return operatorXbox.getLeftTriggerAxis() + operatorXbox.getRightTriggerAxis();
-   }
-   private double getDriverTriggerCombined()
-   {
-      return driverXbox.getLeftTriggerAxis() + driverXbox.getRightTriggerAxis();
    }
 }

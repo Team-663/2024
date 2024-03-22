@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.239175719435603,
-      "y": 5.211322262872771
+      "x": 0.46,
+      "y": 7.0
     },
     "rotation": 0
   },
@@ -16,15 +16,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "toSideNote"
+                  "name": "ArmLow"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "intakeOneNote"
+                  "pathName": "singleSideToGoal"
                 }
               }
             ]
@@ -33,12 +33,12 @@
         {
           "type": "named",
           "data": {
-            "name": "shootNote"
+            "name": "ShootNote"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "singleSide",
   "choreoAuto": false
 }

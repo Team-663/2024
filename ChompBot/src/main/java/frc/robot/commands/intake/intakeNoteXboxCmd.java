@@ -10,17 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.Auton;
-import edu.wpi.first.wpilibj.Timer;
 
-public class intakeOneNote extends Command {
+public class intakeNoteXboxCmd extends Command {
   /** Creates a new intakeOneNote. */
   Shooter m_shooter;
-  private Timer time;
-  public intakeOneNote(Shooter shooter) {
+  public intakeNoteXboxCmd(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
-    time = new Timer();
     addRequirements(m_shooter);
   }
 
@@ -29,8 +25,6 @@ public class intakeOneNote extends Command {
   public void initialize() 
   {
     m_shooter.setArmPosition(ArmConstants.ARM_DOWN_ENCODER_VALUE);
-    time.reset();
-    time.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,6 +48,6 @@ public class intakeOneNote extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_shooter.CheckIfNoteInIntake() || time.hasElapsed(Auton.AUTO_INTAKE_MAX_DURATION));
+    return m_shooter.CheckIfNoteInIntake();
   }
 }
