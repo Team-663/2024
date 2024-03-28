@@ -78,6 +78,6 @@ public class shootNote extends Command {
    public boolean isFinished() {
       // TODO: do we need a timer here?
       //return (m_hasShot && time.hasElapsed(Auton.AUTO_SHOOT_DURATION));
-      return (!m_shooter.CheckIfNoteInIntake());
+      return (!m_shooter.CheckIfNoteAnywhere());
    }
 }

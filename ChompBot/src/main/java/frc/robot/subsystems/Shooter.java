@@ -24,11 +24,15 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 
@@ -48,19 +52,30 @@ public class Shooter extends SubsystemBase {
    private final SparkPIDController m_shooterPID = m_shooterMotorLeader.getPIDController();
    private final RelativeEncoder m_shooterEnc = m_shooterMotorLeader.getEncoder();   
    
-   private final LaserCan m_laser = new LaserCan(21);
-   private boolean m_laserValidMeasurement = false;
+   private final LaserCan m_laser = new LaserCan(ArmConstants.CANID_INTAKE_LASER_1);
+   private final LaserCan m_laser2 = new LaserCan(ArmConstants.CANID_INTAKE_LASER_2);
+
+   private PowerDistribution pdh = new PowerDistribution(30, ModuleType.kRev);
+
+
    private double m_shooterSetpoint = 0.0;
    private boolean m_isShooterAtSetpoint = false;
+   private boolean m_laserValidMeasurement;
+   private boolean m_laser2ValidMeasurement;
+   
    private double m_laserDistInches = 0.0;
+   private double m_laser2DistInches = 0.0;
    private double m_armSetpoint = 0.0;
+   private boolean m_hasNote = false;
+   private boolean m_hasNoteInNose = false;
 
    private ShuffleboardTab tab = Shuffleboard.getTab("Arm");
    private GenericEntry sbtLaserEntry = tab.add("Laser Distance", 0).getEntry();
+   private GenericEntry sbtLaser2Entry = tab.add("Laser2 Distance", 0).getEntry();
    private GenericEntry sbtShooterSpeed = tab.add("Shooter RPM", 0).getEntry();
    private GenericEntry sbtShooterMotorOutput = tab.add("Shooter Output", 0).getEntry();
    private GenericEntry sbtShooterCurrent = tab.add("Shooter Amps", 0).getEntry();
-   
+   private GenericEntry sbtIntakeSpeed = tab.add("Intake Speed", 0).getEntry();
    private GenericEntry sbtShooterSetpoint = tab.add("Shooter Setpt", 0).getEntry();
    private GenericEntry sbtNoteInsideIntake = tab.add("Is Note Inside", 0).getEntry();
    private GenericEntry sbtArmSpeed = tab.add("Arm Speed", 0).getEntry();
@@ -72,6 +87,12 @@ public class Shooter extends SubsystemBase {
    private GenericEntry stbArmError = tab.add("Arm Error", 0).getEntry();
 
    private GenericEntry stbShootOpenVal = tab.add("Shoot Cmd Value", 0).getEntry();
+
+
+   private ShuffleboardTab tabPower = Shuffleboard.getTab("Power");
+   private GenericEntry powerTabPlug3 = tabPower.add("PDH 3 Amps", 0).getEntry();
+   private GenericEntry powerTabPlug4 = tabPower.add("PDH 4 Amps", 0).getEntry();
+   
    public Shooter() {
       m_shooterMotorLeader.restoreFactoryDefaults();
       //m_shooterMotorFollower.restoreFactoryDefaults();
@@ -88,11 +109,27 @@ public class Shooter extends SubsystemBase {
 
    }
 
+   // Laser 1 is the edge laser
    public boolean CheckIfNoteInIntake()
    {
       return (m_laserDistInches < Constants.ArmConstants.LASER_BEAM_BREAK_THRESHOLD);    
    }
 
+   // Laser 2 is the middle laser, use this to check if in intake
+   public boolean CheckIfNoteAtLaser2()
+   {
+      //return (m_laser2DistInches < ArmConstants.LASER_BEAM_BREAK_THRESHOLD);
+      return m_hasNote;
+   }
+
+   public boolean CheckIfNoteAnywhere()
+   {
+      if ( (m_hasNote || m_hasNoteInNose))
+         return true;
+      else
+         return false;
+   }
+   
    public boolean IsShooterUpToSpeed()
    {
       return m_isShooterAtSetpoint;
@@ -159,19 +196,26 @@ public class Shooter extends SubsystemBase {
 
    public void intakeNote()
    {
-      // run intake motors at intake speed
-      // if beam is broken, stop
-      if (!CheckIfNoteInIntake())
-         intakeMotorSet(Constants.ArmConstants.INTAKE_MOTOR_SPEED);
-      else
-         intakeIdle();
+      // Laser 2 is the closest to the intake, full speed until it senses a note
+      if (!CheckIfNoteAnywhere())
+      {
+         intakeMotorSet(ArmConstants.INTAKE_MOTOR_SPEED_MAX);
+      }
+      else 
+      {
+         // If note is past laser 2, slow down until
+         if (!CheckIfNoteAtLaser2())
+            intakeMotorSet(ArmConstants.INTAKE_MOTOR_SPEED_PAST_LASER1);
+         else
+            intakeIdle(); // Stop once laser 1 sees note
+      }
    }
 
    public void intakeNote(double speed)
    {
       // run intake motors at intake speed
       // if beam is broken, stop
-      if (!CheckIfNoteInIntake())
+      if (!CheckIfNoteAnywhere())
          intakeMotorSet(speed);
       else
          intakeIdle();
@@ -317,10 +361,23 @@ public class Shooter extends SubsystemBase {
       {
          m_laserValidMeasurement = true;
          m_laserDistInches = (double)measurement.distance_mm / 25.4;
+         m_hasNoteInNose = (m_laserDistInches < ArmConstants.LASER_BEAM_BREAK_THRESHOLD ? true : false);
       }
       else
       {
          m_laserValidMeasurement = false;
+      }
+
+      LaserCan.Measurement measurement2 = m_laser2.getMeasurement();
+      if (measurement2 != null && measurement2.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) 
+      {
+         m_laser2ValidMeasurement = true;
+         m_laser2DistInches = (double)measurement2.distance_mm / 25.4;
+         m_hasNote = (m_laser2DistInches < ArmConstants.LASER_BEAM_BREAK_THRESHOLD ? true : false);
+      }
+      else
+      {
+         m_laser2ValidMeasurement = false;
       }
     
    }
@@ -328,6 +385,11 @@ public class Shooter extends SubsystemBase {
    public double GetLaserDistance()
    {
       return m_laserDistInches;
+   }
+
+   public double GetLaser2Distance()
+   {
+      return m_laser2DistInches;
    }
 
    private void initLaserCAN()
@@ -349,8 +411,10 @@ public class Shooter extends SubsystemBase {
    private void UpdateShuffleboardValues()
    {
       sbtLaserEntry.setDouble(m_laserDistInches);
+      sbtLaser2Entry.setDouble(m_laser2DistInches);
+      sbtIntakeSpeed.setDouble(m_intakeMotor.get());
       sbtShooterSpeed.setDouble(m_shooterEnc.getVelocity());
-      sbtNoteInsideIntake.setBoolean(CheckIfNoteInIntake());
+      sbtNoteInsideIntake.setBoolean(CheckIfNoteAtLaser2());
       sbtShooterMotorOutput.setDouble(m_shooterMotorLeader.getAppliedOutput());
       sbtShooterCurrent.setDouble(m_shooterMotorLeader.getOutputCurrent());
       sbtShooterSetpoint.setDouble(m_shooterSetpoint);
@@ -358,6 +422,10 @@ public class Shooter extends SubsystemBase {
       sbtArmPosition.setDouble(m_armMotor.getSelectedSensorPosition());
       stbArmSetpoint.setDouble(m_armSetpoint);
       stbArmError.setDouble(m_armMotor.getClosedLoopError());
+
+
+      powerTabPlug3.setDouble(pdh.getCurrent(3));
+      powerTabPlug4.setDouble(pdh.getCurrent(4));
       
    }
 
@@ -423,8 +491,10 @@ public class Shooter extends SubsystemBase {
       else
          m_isShooterAtSetpoint = false;
 
+      SmartDashboard.putBoolean("HasNote", m_hasNote);
       SmartDashboard.putNumber("ArmAbsEnc", m_armMotor.getSelectedSensorPosition());
       SmartDashboard.putBoolean("shooterReady?", m_isShooterAtSetpoint);
+      SmartDashboard.putBoolean("NoteAnywhere", CheckIfNoteAnywhere());
       // This method will be called once per scheduler run
    }
 

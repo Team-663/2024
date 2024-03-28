@@ -68,7 +68,12 @@ public final class Constants {
       public static final int CANID_ARM_TALON_1 = 17;
       public static final int CANID_ARM_VICTOR_2 = 18;
 
+      public static final int CANID_INTAKE_LASER_1 = 21; // laser at nose of intake
+      public static final int CANID_INTAKE_LASER_2 = 22; // laser under the middle wheel of intake
+
+      public static final double INTAKE_MOTOR_SPEED_MAX = 0.8;
       public static final double INTAKE_MOTOR_SPEED = 0.8; // was 0.75 with the 775Pro
+      public static final double INTAKE_MOTOR_SPEED_PAST_LASER1 = 0.55;
       public static final double INTAKE_MOTOR_SPEED_SLOWER = 0.7;
       public static final double INTAKE_MOTOR_SHOOT_SPEED = 1.0; // vibe based engineering
       public static final double INTAKE_BACK_SLOW_SPEED = -0.35;
@@ -114,7 +119,7 @@ public final class Constants {
       // 3010 - 3050 long shot
 
       public static final double ARM_PEAK_UP_POWER = 0.5;
-      public static final double ARM_PEAK_DOWN_POWER = -0.35;
+      public static final double ARM_PEAK_DOWN_POWER = -0.25;
 
       // Might not need these, use arbitrary FF term instead
       public static final double ARM_KG = 0.59;

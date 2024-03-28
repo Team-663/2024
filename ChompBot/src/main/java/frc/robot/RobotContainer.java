@@ -164,7 +164,7 @@ public class RobotContainer {
       
 
 
-      operatorXbox.x().whileTrue(new intakeNoteXboxCmd(m_shooter)).onFalse(new intakeBackupNote(m_shooter));
+      operatorXbox.x().whileTrue(new intakeNoteXboxCmd(m_shooter, true)).onFalse(new intakeBackupNote(m_shooter));
 
       
       operatorXbox.b().whileTrue(new SequentialCommandGroup(
@@ -193,6 +193,8 @@ public class RobotContainer {
                                     XboxController.Axis.kLeftY.value, 0.1).or(
                                     operatorXbox.axisLessThan(XboxController.Axis.kLeftY.value, -0.1)).whileTrue(
                                        m_shooter.armByXboxCommand(() -> -operatorXbox.getLeftY()));
+
+      operatorXbox.leftBumper().whileTrue(new intakeNoteXboxCmd(m_shooter, false));
 
    }
 

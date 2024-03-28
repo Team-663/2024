@@ -14,46 +14,58 @@ import frc.robot.Constants.Auton;
 import edu.wpi.first.wpilibj.Timer;
 
 public class intakeOneNote extends Command {
-  /** Creates a new intakeOneNote. */
-  Shooter m_shooter;
-  private Timer time;
-  public intakeOneNote(Shooter shooter) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_shooter = shooter;
-    time = new Timer();
-    addRequirements(m_shooter);
-  }
+   /** Creates a new intakeOneNote. */
+   Shooter m_shooter;
+   private Timer time;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() 
-  {
-    m_shooter.setArmPosition(ArmConstants.ARM_DOWN_ENCODER_VALUE);
-    time.reset();
-    time.start();
-  }
+   public intakeOneNote(Shooter shooter)
+   {
+      // Use addRequirements() here to declare subsystem dependencies.
+      m_shooter = shooter;
+      time = new Timer();
+      addRequirements(m_shooter);
+   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() 
-  {
-    if (m_shooter.IsShooterSpinningTooFastForIntake())
-    {
-      m_shooter.intakeNote(ArmConstants.INTAKE_MOTOR_SPEED_SLOWER);
-    }
-    else
-    {
-      m_shooter.intakeNote();
-    }
-  }
+   // Called when the command is initially scheduled.
+   @Override
+   public void initialize()
+   {
+      m_shooter.setArmPosition(ArmConstants.ARM_DOWN_ENCODER_VALUE);
+      time.reset();
+      time.start();
+   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+   // Called every time the scheduler runs while the command is scheduled.
+   @Override
+   public void execute()
+   {
+      //if (m_shooter.IsShooterSpinningTooFastForIntake()) {
+      //   m_shooter.intakeNote(.40);
+      //} else {
+         m_shooter.intakeNote(.85);
+      //}
+   }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return (m_shooter.CheckIfNoteInIntake() || time.hasElapsed(Auton.AUTO_INTAKE_MAX_DURATION));
-  }
+   // Called once the command ends or is interrupted.
+   @Override
+   public void end(boolean interrupted) {
+   }
+
+   // Returns true when the command should end.
+   @Override
+   public boolean isFinished()
+   {
+      if (m_shooter.CheckIfNoteAnywhere() == true)
+      {
+         return true;
+      }
+
+      if (time.hasElapsed(Auton.AUTO_INTAKE_MAX_DURATION) == true)
+      {
+         return true;
+      }
+
+      return false;
+      //return (m_shooter.CheckIfNoteAnywhere() || time.hasElapsed(Auton.AUTO_INTAKE_MAX_DURATION));
+   }
 }
