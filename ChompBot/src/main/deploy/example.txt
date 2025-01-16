@@ -10,7 +10,7 @@ back right:  182.89
 front left:  187.3
 front right: 346.71 
 
-
+wheel diameter 3.84;
 
 
 2.0:; 

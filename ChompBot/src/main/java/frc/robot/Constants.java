@@ -110,7 +110,7 @@ public final class Constants {
       public static final double ARM_SOFT_LIMIT_TEST_CLOSE_UPPER = 3300;
 
       public static final double ARM_DOWN_ENCODER_VALUE = 2380;
-      public static final double ARM_CLOSE_SHOT_SETPOINT = 2920; // was 2837
+      public static final double ARM_CLOSE_SHOT_SETPOINT = 2930; // was 2837
       public static final double ARM_LONG_SHOT_SETPOINT = 3125;
       public static final double ARM_AMP_SHOT_SETPOINT = 3050;
 

@@ -35,6 +35,18 @@
           "data": {
             "name": "ShootNote"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 9.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toSingleSideLine"
+          }
         }
       ]
     }
